@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
 import classNames from 'classnames';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 class Main extends Component {
 
 
     render() {
         
-        const { classes, layoutState } = this.props
+        const { classes, layoutState, login, userState, theme } = this.props
+        const loginButton = () => {
+            if  (!userState.authenticated) return (
+                <Button variant="outlined" color="primary" onClick={login}>Log in with Solid</Button>
+            )
+            return null
+        }
 
         return (
             <main
@@ -17,7 +24,7 @@ class Main extends Component {
                 })}
             >
                 <div className={classes.drawerHeader} />
-                <Typography>{'Bienvenue'}</Typography>
+                { loginButton() }
             </main>
             
         )

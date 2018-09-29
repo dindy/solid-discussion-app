@@ -7,8 +7,13 @@ import styles from './styles'
 import Main from "./components/Main"
 import { connect } from 'react-redux'
 import * as layoutActions from './actions/layout'
+import * as userActions from './actions/user'
 
 class App extends Component {
+
+    componentDidMount() {
+        this.props.recoverSession()
+    }
 
     render() {
 
@@ -27,11 +32,14 @@ class App extends Component {
                     theme={theme} 
                     toggleLeftDrawer={this.props.toggleLeftDrawer}
                     layoutState={this.props.layoutState} 
+                    userState={this.props.userState} 
                 />
                 <Main 
                     classes={classes} 
                     theme={theme}
                     layoutState={this.props.layoutState} 
+                    userState={this.props.userState} 
+                    login={this.props.login}                    
                 />
             </div>
         );
@@ -39,11 +47,14 @@ class App extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-    toggleLeftDrawer: () => dispatch(layoutActions.toggleLeftDrawer())
+    toggleLeftDrawer: () => dispatch(layoutActions.toggleLeftDrawer()),
+    login: () => dispatch(userActions.login()),
+    recoverSession: () => dispatch(userActions.recoverSession()),
 })
 
 const mapStateToProps = state => ({
-    layoutState: state.layout
+    layoutState: state.layout,
+    userState: state.user,
 })
 
 App.propTypes = {
