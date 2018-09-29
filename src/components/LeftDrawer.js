@@ -9,33 +9,21 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 
 class LeftDrawer extends Component {
 
-    state = {
-        open: true,
-        anchor: 'left',
-    };
-
-    handleDrawerOpen = () => this.setState({ open: true })
-
-    handleDrawerClose = () => this.setState({ open: false })
-
-    handleChangeAnchor = event => this.setState({
-        anchor: event.target.value,
-    })
+    handleDrawerToggle = () => this.props.toggleLeftDrawer()
 
     render() {
 
-        const { anchor, open } = this.state
-        const { classes, theme } = this.props
+        const { classes, theme, layoutState } = this.props
         
         return (
             <Drawer
                 variant="persistent"
-                anchor={anchor}
-                open={open}
+                anchor='left'
+                open={layoutState.leftDrawer.open}
                 classes={{paper: classes.drawerPaper,}}
             >
                 <div className={classes.drawerHeader}>
-                    <IconButton onClick={this.handleDrawerClose}>
+                    <IconButton onClick={this.handleDrawerToggle}>
                         {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
                     </IconButton>
                 </div>

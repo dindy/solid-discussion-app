@@ -4,21 +4,16 @@ import Typography from '@material-ui/core/Typography';
 
 class Main extends Component {
 
-    state = {
-        open: false,
-        anchor: 'left',
-    };
 
     render() {
         
-        const { classes } = this.props
-        const state = this.state
+        const { classes, layoutState } = this.props
 
         return (
             <main
-                className={classNames(classes.content, classes[`content-right`], {
-                    [classes.contentShift]: state.open,
-                    [classes[`contentShift-right`]]: state.open,
+                className={classNames(classes.content, classes[`content-left`], {
+                    [classes.contentShift]: layoutState.leftDrawer.open,
+                    [classes[`contentShift-left`]]: layoutState.leftDrawer.open,
                 })}
             >
                 <div className={classes.drawerHeader} />
