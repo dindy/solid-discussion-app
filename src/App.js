@@ -1,21 +1,30 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import LeftDrawer from './components/LeftDrawer';
+import AppBarWrapper from './components/AppBarWrapper';
+import styles from './styles'
+import Main from "./components/Main";
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
+
+    render() {
+        
+        const { classes, theme } = this.props
+
+        return (
+            <div className={classes.appFrame}>
+                <AppBarWrapper classes={classes} theme={theme} />
+                <LeftDrawer classes={classes} theme={theme} />
+                <Main classes={classes} theme={theme} />
+            </div>
+        );
+    }
 }
 
-export default App;
+App.propTypes = {
+    classes: PropTypes.object.isRequired,
+    theme: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles, { withTheme: true })(App);
