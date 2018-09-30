@@ -20,29 +20,42 @@ The design follows [Material Design](https://material.io/design/) principles.
 A user can authenticate himself with his [WebID](http://www.w3.org/2005/Incubator/webid/spec/identity/) :
 > The WebID 1.0 (Web Identity and Discovery) standard is used to provide universal usernames/IDs for Solid apps, and to refer to unique Agents (people, organizations, devices). [source](https://github.com/solid/solid)
 
-The app display the name of the connected user.
+The app display the name and the avatar of the connected user if data are fulfilled.
+
+The app recover the previous session.
 
 ### 🔧 Implementation 
 
-The app uses [solid-auth-client](https://github.com/solid/solid-auth-client) library to handle authentication with a [Solid server](https://github.com/solid/solid-platform#servers) such as [node-solid-server](https://github.com/solid/node-solid-server/). The library completely abstracts the complexity of connecting a user. 
+The app uses [solid-auth-client](https://github.com/solid/solid-auth-client) library to handle authentication with a [Solid server](https://github.com/solid/solid-platform#servers) such as [node-solid-server](https://github.com/solid/node-solid-server/). The library completely abstracts the complexity of authenticating a user and handle the session. 
+
+Once the user is authenticated we load data about the user via his [WebId profile](https://www.w3.org/2005/Incubator/webid/spec/identity/#publishing-the-webid-profile-document) in [turtle](https://www.w3.org/TR/turtle/) format  and parse it with the [rdflib library](https://github.com/linkeddata/rdflib.js/) to extract his `foaf:name` and his `foaf:img`. 
+
+### 📅 Status
+
+Done
 
 ### ⭐️ [SDA-2] A user can create a discussion 
 
 #### 📋 Description
 
-A user can create a new discussion on his pod in a way that is compliant with Solid and Linked Data good practises. 
+A user can create a new discussion on his pod. 
+
+The user must give a name to the conversation.
+
+The user choices the path where to store the conversation on his pod. 
+
+__Warning__ : This story is over-simplistic. In order to preserve interoperability between client applications a strategy to determine a default location should be applied using `solid:TypeRegistration` ([see the spec](https://github.com/solid/solid/blob/master/proposals/data-discovery.md)). However I couldn't figure out how to fit it in my use case so for now the user choose a location by hand which is a pretty bad UX. I think further reflexion and discussion on this topic need to be done by the Solid community.
 
 ### 🔧 Implementation 
 
-#### Vocabulary
+The app uses the [SIOC Core Ontology Specification](https://www.w3.org/Submission/sioc-spec/) to modelize business data (discussion, messages, participants, etc.). Other vocabularies will be implemented later. 
+The class [`sioc:Thread`](http://rdfs.org/sioc/ns#Thread) is used to represent a discussion. 
 
-The app uses the [SIOC Core Ontology Specification](https://www.w3.org/Submission/sioc-spec/) to modelize  data. E.g : The class [`sioc:Thread`](http://rdfs.org/sioc/ns#Thread) represents a discussion. 
+### 📅 Status
 
-#### Follow your nose
+Doing
 
-#### Resource authorizations
-
-### ⭐️ [SDA-3] A user can invite people
+### ⭐️ [SDA-3] A user can invite participants
 
 #### 📋 Description
 
@@ -50,3 +63,7 @@ Once a discussion is created the user can invite other people to participate by 
 The user can only add members to a discussion he owns.
 
 ### Implementation 
+
+### 📅 Status
+
+To do
