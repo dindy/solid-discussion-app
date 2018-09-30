@@ -3,27 +3,14 @@ import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar'
 import classNames from 'classnames';
-
-const styles = {
-    row: {
-      display: 'flex',
-      justifyContent: 'center',
-    },
-    avatar: {
-      margin: 10,
-    },
-    bigAvatar: {
-      width: 60,
-      height: 60,
-    },
-  };
+import { withStyles } from '@material-ui/core/styles'
+import styles from './LeftDrawer.styles'
 
 class LeftDrawer extends Component {
 
@@ -71,4 +58,4 @@ class LeftDrawer extends Component {
     }
 }
     
-export default LeftDrawer;            
+export default withStyles(styles, { withTheme: true })(LeftDrawer)
