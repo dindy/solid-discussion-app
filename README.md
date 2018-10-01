@@ -34,6 +34,8 @@ Once the user is authenticated we load data about the user via his [WebId profil
 
 Done
 
+_______________________
+
 ### ⭐️ [SDA-2] A user can create a discussion 
 
 #### 📋 Description
@@ -55,6 +57,8 @@ The class [`sioc:Thread`](http://rdfs.org/sioc/ns#Thread) is used to represent a
 
 Doing
 
+_______________________
+
 ### ⭐️ [SDA-3] A user can invite participants
 
 #### 📋 Description
@@ -67,3 +71,5 @@ The user can only add members to a discussion he owns.
 ### 📅 Status
 
 To do
+
+_______________________
