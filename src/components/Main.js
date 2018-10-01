@@ -1,11 +1,10 @@
-import React, { Component } from 'react';
-import classNames from 'classnames';
-import Button from '@material-ui/core/Button';
+import React, { Component } from 'react'
+import classNames from 'classnames'
+import Button from '@material-ui/core/Button'
 import { withStyles } from '@material-ui/core/styles'
 import styles from './Main.styles'
 
 class Main extends Component {
-
 
     render() {
         
@@ -24,7 +23,6 @@ class Main extends Component {
                     [classes[`contentShift-left`]]: layoutState.leftDrawer.open,
                 })}
             >
-                <div className={classes.drawerHeader} />
                 { loginButton() }
             </main>
             

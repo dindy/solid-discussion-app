@@ -4,7 +4,8 @@ const initialState = {
     authenticated: false,
     webId: null,
     name: null,
-    avatarUrl: null
+    avatarUrl: null,
+    error: null,
 }
 
 const layout = (state = initialState, action) => {
@@ -14,7 +15,17 @@ const layout = (state = initialState, action) => {
             ...state, 
             authenticated: true,
             webId: action.payload.webId      
-        }        
+        }    
+        case 'AUTHENTICATION_ERROR':    
+            return {
+                ...state, 
+                authenticated: false,
+            }    
+        case 'REQUEST_PROFILE_ERROR':    
+            return {
+                ...state, 
+                error: action.payload
+            }    
         case 'REQUEST_PROFILE_SUCCESS':
             const mimeType = 'text/turtle'
             const store = $rdf.graph()

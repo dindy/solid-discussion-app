@@ -20,21 +20,29 @@ export const recoverSession = () => dispatch => {
 
 export const login = () => dispatch => {
     dispatch({ type: 'AUTHENTICATION_LAUNCH', payload: null })
+    // Get the session
     popupLogin().then(
         session => {
             dispatch({ type: 'AUTHENTICATION_SUCCESS', payload: session })
             dispatch({ type: 'REQUEST_PROFILE_LAUCH', payload: null })
+            // Request the profile
             loadProfile(session.webId)
                 .then(
-                    profile => profile.text(),
-                    error => dispatch({ type: 'REQUEST_PROFILE_ERROR', payload: error })
+                    response => {
+                        // If http status != 200, it's actually an error. 
+                        // Body should contain an error message
+                        if (response.status != '200') 
+                            return response.text().then(message => Promise.reject(new Error(message)))
+                        // Else it's ok parse the text
+                        else return response.text()
+                    },
+                    error => dispatch({ type: 'REQUEST_PROFILE_ERROR', payload: error.message })
                 )
-                .then( profile => {  
-                    dispatch({ type: 'REQUEST_PROFILE_SUCCESS', payload: profile })
-                })
+                .then( 
+                    profile => dispatch({ type: 'REQUEST_PROFILE_SUCCESS', payload: profile }),
+                    error => dispatch({ type: 'REQUEST_PROFILE_ERROR', payload: error.message })
+                )
         },
-        error => {
-            dispatch({ type: 'AUTHENTICATION_ERROR', payload: error })
-        }
+        error => dispatch({ type: 'AUTHENTICATION_ERROR', payload: error })
     )    
 }

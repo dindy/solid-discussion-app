@@ -28,7 +28,7 @@ const styles = theme => ({
     },
     'contentShift-right': {
         marginRight: 0,
-    },
+    }, 
 })
 
 export default styles

@@ -5,6 +5,7 @@ import LeftDrawer from './components/LeftDrawer'
 import AppBarWrapper from './components/AppBarWrapper'
 import styles from './App.styles'
 import Main from "./components/Main"
+import SnackbarNotifications from "./components/SnackbarNotifications"
 import { connect } from 'react-redux'
 import * as layoutActions from './actions/layout'
 import * as userActions from './actions/user'
@@ -34,6 +35,11 @@ class App extends Component {
                     layoutState={this.props.layoutState} 
                     userState={this.props.userState} 
                     login={this.props.login}                    
+                    />
+                <SnackbarNotifications
+                    layoutState={this.props.layoutState} 
+                    closeSnackbar={this.props.closeSnackbar} 
+                    exitedSnackbarCallback={this.props.exitedSnackbarCallback} 
                 />
             </div>
         );
@@ -42,6 +48,8 @@ class App extends Component {
 
 const mapDispatchToProps = dispatch => ({
     toggleLeftDrawer: () => dispatch(layoutActions.toggleLeftDrawer()),
+    closeSnackbar: () => dispatch(layoutActions.closeSnackbar()),
+    exitedSnackbarCallback: () => dispatch(layoutActions.exitedSnackbarCallback()),
     login: () => dispatch(userActions.login()),
     recoverSession: () => dispatch(userActions.recoverSession()),
 })
