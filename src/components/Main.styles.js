@@ -2,6 +2,7 @@ import { drawerWidth } from '../styles/variables'
 
 const styles = theme => ({
     content: {
+        paddingTop: 88, // menu height(64px) + 24px
         flexGrow: 1,
         backgroundColor: theme.palette.background.default,
         padding: theme.spacing.unit * 3,
