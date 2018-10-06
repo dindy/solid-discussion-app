@@ -20,7 +20,7 @@ class LeftDrawer extends Component {
 
         const { classes, theme, layoutState, userState } = this.props
         const renderUserData = () => {
-            return (
+            return userState.authenticated ? (
                 <div>
                     <Avatar
                         alt={userState.name}
@@ -31,7 +31,7 @@ class LeftDrawer extends Component {
                         {userState.name}
                     </Typography>                                      
                 </div>
-            )
+            ) : <div></div>
         }
 
         return (
@@ -49,7 +49,9 @@ class LeftDrawer extends Component {
                 </div>
    
                 <Divider />
-                <ListSubheader>Discussions</ListSubheader>
+                <ListSubheader>
+                    Discussions
+                </ListSubheader>
                 <List>
                     
                 </List>

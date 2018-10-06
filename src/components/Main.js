@@ -3,17 +3,56 @@ import classNames from 'classnames'
 import Button from '@material-ui/core/Button'
 import { withStyles } from '@material-ui/core/styles'
 import styles from './Main.styles'
+import AddIcon from '@material-ui/icons/Add'
+import NewDiscussionForm from './NewDiscussionForm'
 
 class Main extends Component {
 
     render() {
         
-        const { classes, layoutState, login, userState } = this.props
+        const { classes, 
+            layoutState, 
+            login, 
+            userState, 
+            discussionsState,
+            newDiscussion, 
+            changeNewDiscussionStorage, 
+            openExplorer,
+            changeNewDiscussionName,
+            changeNewDiscussionPath,      
+            changeNewDiscussionAddPrivateIndex,     
+            cancelNewDiscussion,
+            createNewDiscussion,
+        } = this.props
+        
         const loginButton = () => {
-            if  (!userState.authenticated) return (
+            return !userState.authenticated ? ( 
                 <Button variant="outlined" color="primary" onClick={login}>Log in with Solid</Button>
-            )
-            return null
+            ) : null
+        }
+            
+        const newDiscussionButton = () => {
+            return userState.authenticated && !layoutState.newDiscussionForm.open ? (
+                <Button variant="fab" className={classes.fab} color='primary' onClick={newDiscussion}>
+                    <AddIcon />
+                </Button>                           
+            ) : null
+        }
+
+        const newDiscussionForm = () => {
+            return layoutState.newDiscussionForm.open ? (
+                <NewDiscussionForm 
+                    userState={userState} 
+                    changeNewDiscussionStorage={changeNewDiscussionStorage}
+                    openExplorer={openExplorer}
+                    discussionsState={discussionsState}
+                    changeNewDiscussionName={changeNewDiscussionName}
+                    changeNewDiscussionPath={changeNewDiscussionPath}
+                    changeNewDiscussionAddPrivateIndex={changeNewDiscussionAddPrivateIndex}
+                    cancelNewDiscussion={cancelNewDiscussion}
+                    createNewDiscussion={createNewDiscussion}
+                />
+            ) : null
         }
 
         return (
@@ -24,6 +63,8 @@ class Main extends Component {
                 })}
             >
                 { loginButton() }
+                { newDiscussionButton() } 
+                { newDiscussionForm() }
             </main>
             
         )

@@ -1,13 +1,18 @@
 const initialState = {
     leftDrawer: {
-        open: true
+        open: false
     },
     snackbar: {
         queue: [],
         open: false,
         messageInfo: {}
+    },
+    newDiscussionForm: {
+        open: false
+    },
+    explorer: {
+        open: false
     }
-    
 }
 
 const addSnackbarMessage = (message, snackbarState) => {
@@ -55,11 +60,41 @@ const handleSnackbarClose = (reason, snackbarState) => {
 
 const layout = (state = initialState, action) => {
     switch (action.type) {
+        case 'NEW_DISCUSSION_LAUNCH':
+            return {
+                ...state,  
+                newDiscussionForm: {
+                    ...state.newDiscussionForm,
+                    open: true
+                }
+            }           
+        case 'NEW_DISCUSSION_CANCEL':
+            return {
+                ...state,  
+                newDiscussionForm: {
+                    ...state.newDiscussionForm,
+                    open: false
+                }
+            }           
         case 'TOGGLE_LEFT_DRAWER':
             return {
                 ...state, leftDrawer: {
                     ...state.leftDrawer,
                     open: !state.leftDrawer.open
+                }      
+            }    
+        case 'CLOSE_LEFT_DRAWER':
+            return {
+                ...state, leftDrawer: {
+                    ...state.leftDrawer,
+                    open: false
+                }      
+            }    
+        case 'OPEN_LEFT_DRAWER':
+            return {
+                ...state, leftDrawer: {
+                    ...state.leftDrawer,
+                    open: true
                 }      
             }    
         case 'SNACKBAR_CLOSE': 
@@ -71,12 +106,29 @@ const layout = (state = initialState, action) => {
             return {
                 ...state, 
                 snackbar: processSnackbarQueue(state.snackbar)
-            }                                   
+            }               
+        case 'PARSE_PROFILE_ERROR':                    
         case 'REQUEST_PROFILE_ERROR':    
             return {
                 ...state, 
                 snackbar: addSnackbarMessage(action.payload, state.snackbar)
-            }                       
+            }      
+        case 'EXPLORER_OPEN':
+            return {
+                ...state,
+                explorer: {
+                    ...state.explorer,
+                    open: true  
+                }   
+            }
+        case 'EXPLORER_CLOSE':
+            return {
+                ...state,
+                explorer: {
+                    ...state.explorer,
+                    open: false 
+                } 
+            }                                           
         default:
             return state
     }

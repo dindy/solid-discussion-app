@@ -3,7 +3,7 @@ const styles = theme => ({
         flexGrow: 1,
     },
     appFrame: {
-        height: '100vh',
+        minHeight: '100vh',
         zIndex: 1,
         overflow: 'hidden',
         position: 'relative',
