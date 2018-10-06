@@ -46,8 +46,6 @@ The user must give a name to the conversation.
 
 The user choices the path where to store the conversation on his pod. 
 
-__Warning__ : This story is over-simplistic. In order to preserve interoperability between client applications a strategy to determine a default location should be applied using `solid:TypeRegistration` ([see the spec](https://github.com/solid/solid/blob/master/proposals/data-discovery.md)). However I couldn't figure out how to fit it in my use case so for now the user choose a location by hand which is a pretty bad UX. I think further reflexion and discussion on this topic need to be done by the Solid community.
-
 ### 🔧 Implementation 
 
 The app uses the [SIOC Core Ontology Specification](https://www.w3.org/Submission/sioc-spec/) to modelize business data (discussion, messages, participants, etc.). Other vocabularies will be implemented later. 
