@@ -19,7 +19,8 @@ const parseFolderData = (url, data, dispatch) => {
         store.query(query, callback)
     } catch (error) {
         dispatch({ type: 'PARSE_EXPLORER_FOLDER_ERROR', payload: error.message })
-    }            
+    }       
+    dispatch({ type: 'PARSE_EXPLORER_FOLDER_DONE', payload: null })
 }
 
 const fetchFolder = (url, dispatch) => {

@@ -14,7 +14,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import FolderIcon from '@material-ui/icons/Folder'
 import HomeIcon from '@material-ui/icons/Home'
-import { selectFolder } from '../actions/explorer';
+import { selectFolder } from '../actions/explorer'
+import LinearProgress from '@material-ui/core/LinearProgress'
 
 class Explorer extends Component {
 
@@ -30,7 +31,10 @@ class Explorer extends Component {
             if (explorerState.root == explorerState.storage) return explorerState.storage
             return explorerState.root.replace(explorerState.storage, '')
         }
-
+        const displayProgressBar = () => {
+            if (explorerState.loading) return <LinearProgress />
+            return <div className={classes.hiddenLoader}></div>
+        }
         return (   
             <Modal
                 aria-labelledby="simple-modal-title"
@@ -58,6 +62,7 @@ class Explorer extends Component {
                                 >Select</Button>
                         </ListSubheader>                        
                         <Divider className={classes.hrBottom}/>
+                        {displayProgressBar()}
                         <List>
                             {explorerState.folders
                                 .filter(folder => folder.parent == explorerState.root)

@@ -105,7 +105,7 @@ class NewDiscussionForm extends Component {
                 <CardHeader 
                     className={classes.cardHeader} 
                     title="New discussion" 
-                    subheader="Create a new discussion" 
+                    subheader="Create a new discussion on your pod." 
                     />
                 <CardContent className={classes.cardContent}>
                     <form 
@@ -164,9 +164,9 @@ class NewDiscussionForm extends Component {
                                 label="Folder path"
                                 className={classNames(classes.textField)}
                                 value={getRelativePath()}
-                                onChange={this.changeName}
+                                onClick={this.selectFolder}
+                                onChange={this.selectFolder}
                                 margin="normal"      
-                                disabled={true}  
                                 InputProps={inputProps}
                                 helperText="The path where the folder will be created."                                                                 
                                 />  

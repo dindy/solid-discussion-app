@@ -2,7 +2,7 @@ const initialState = {
     root: null,
     storage: null,
     folders: [],
-    fetching: false,
+    loading: false,
     error: null,
     selected: null,
 }
@@ -45,6 +45,12 @@ const explorer = (state = initialState, action) => {
             return {
                 ...state,
                 root: action.payload,
+                loading: true
+            }   
+        case 'PARSE_EXPLORER_FOLDER_DONE':
+            return {
+                ...state,
+                loading: false
             }   
         case 'CLEAR_EXPLORER_FOLDERS':
             return {

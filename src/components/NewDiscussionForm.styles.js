@@ -1,8 +1,8 @@
 const styles = theme => ({
     container: {
-
     },
     card: {
+        margin: 'auto',
         maxWidth: 600,
     },
     cardHeader: {

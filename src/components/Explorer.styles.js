@@ -50,6 +50,9 @@ const styles = theme => ({
     },
     hrBottom: {
         marginTop: theme.spacing.unit
+    },
+    hiddenLoader: {
+        height: 5
     }
 })
 
