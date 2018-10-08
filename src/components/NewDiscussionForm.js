@@ -73,7 +73,6 @@ class NewDiscussionForm extends Component {
         
         const getRelativePath = () => {
             if (newDiscussion.path == null) return '/'
-            console.log(newDiscussion)
             return '/' + newDiscussion.path.replace(newDiscussion.storageUrl, '')
         }
         
@@ -101,12 +100,12 @@ class NewDiscussionForm extends Component {
         }
 
         return (
-            <Card className={classes.card}>
+            <Card className={classes.card}>                  
                 <CardHeader 
                     className={classes.cardHeader} 
                     title="New discussion" 
                     subheader="Create a new discussion on your pod." 
-                    />
+                />
                 <CardContent className={classes.cardContent}>
                     <form 
                         className={classes.container} 

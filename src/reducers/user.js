@@ -5,10 +5,11 @@ const initialState = {
     avatarUrl: null,
     error: null,
     storages: [],
-    auth: null
+    auth: null,
+    privateTypeIndexUrl: null,
 }
 
-const addStorage = (storageUri, storagesState) => (storagesState.includes(storageUri)) ? 
+const addUniqueStorage = (storageUri, storagesState) => (storagesState.includes(storageUri)) ? 
         storagesState : [...storagesState, storageUri]
 
 const user = (state = initialState, action) => {
@@ -38,6 +39,11 @@ const user = (state = initialState, action) => {
                 ...state,
                 name: action.payload
             }           
+        case 'SET_PROFILE_PRIVATE_TYPE_INDEX':
+            return {
+                ...state,
+                privateTypeIndexUrl: action.payload
+            }           
         case 'SET_PROFILE_AVATAR_URL':
             return {
                 ...state,
@@ -46,7 +52,7 @@ const user = (state = initialState, action) => {
         case 'ADD_PROFILE_STORAGE':
             return {
                 ...state,
-                storages: addStorage(action.payload, state.storages)
+                storages: addUniqueStorage(action.payload, state.storages)
             }           
         case 'STORE_AUTH_CLIENT':
             return {

@@ -68,6 +68,7 @@ const layout = (state = initialState, action) => {
                     open: true
                 }
             }           
+        case 'NEW_DISCUSSION_SAVE_SUCCESS':    
         case 'NEW_DISCUSSION_CANCEL':
             return {
                 ...state,  
@@ -109,6 +110,8 @@ const layout = (state = initialState, action) => {
             }               
         case 'PARSE_PROFILE_ERROR':                    
         case 'REQUEST_PROFILE_ERROR':    
+        case 'NEW_DISCUSSION_SAVE_ERROR':    
+        case 'NEW_DISCUSSION_SAVE_SUCCESS':    
             return {
                 ...state, 
                 snackbar: addSnackbarMessage(action.payload, state.snackbar)
@@ -128,7 +131,7 @@ const layout = (state = initialState, action) => {
                     ...state.explorer,
                     open: false 
                 } 
-            }                                           
+            }                                                                               
         default:
             return state
     }

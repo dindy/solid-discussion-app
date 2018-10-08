@@ -41,9 +41,12 @@ function dispatchProfileData(webId, profile, dispatch) {
         const $hasVCardName = $rdf.sym('http://www.w3.org/2006/vcard/ns#fn')
         const $hasFoafImg = $rdf.sym('http://xmlns.com/foaf/0.1/img')
         const $hasPimStorage = $rdf.sym('http://www.w3.org/ns/pim/space#storage')
+        const $hasPrivateTypeIndex = $rdf.sym('https://www.w3.org/ns/solid/terms#privateTypeIndex')
+        
         const $literalFoafName = store.any($webId, $hasFoafName, undefined)
         const $literalVCardName = store.any($webId, $hasVCardName, undefined)
         const $urlFoafImg = store.any($webId, $hasFoafImg, undefined)
+        const $privateTypeIndex = store.any($webId, $hasPrivateTypeIndex, undefined)
         const $pimStorages = store.each($webId, $hasPimStorage, undefined)
 
         if (typeof $literalFoafName !== 'undefined') 
@@ -53,6 +56,9 @@ function dispatchProfileData(webId, profile, dispatch) {
 
         if (typeof $urlFoafImg !== 'undefined') 
             dispatch({ type: 'SET_PROFILE_AVATAR_URL', payload: $urlFoafImg.value })
+
+        if (typeof $privateTypeIndex !== 'undefined') 
+            dispatch({ type: 'SET_PROFILE_PRIVATE_TYPE_INDEX', payload: $privateTypeIndex.value })
         
         $pimStorages.forEach($pimStorage => {
             dispatch({ type: 'ADD_PROFILE_STORAGE', payload: $pimStorage.value })

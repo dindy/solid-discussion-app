@@ -19,6 +19,8 @@ const styles = theme => ({
     paperInner: {
         margin: `${theme.spacing.unit * 4}px 0`,
     },
+    list: {
+    },
     subHeader: {
         display: 'flex',
         padding: '0px 4px',

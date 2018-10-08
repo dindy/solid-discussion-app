@@ -16,16 +16,16 @@ const parseFolderData = (url, data, dispatch) => {
         store.fetcher = null;
         const callback = result => 
             dispatch({ type: 'ADD_EXPLORER_FOLDER', payload: result['?aname']['value'] })
-        store.query(query, callback)
-    } catch (error) {
-        dispatch({ type: 'PARSE_EXPLORER_FOLDER_ERROR', payload: error.message })
-    }       
-    dispatch({ type: 'PARSE_EXPLORER_FOLDER_DONE', payload: null })
-}
-
-const fetchFolder = (url, dispatch) => {
-    dispatch({ type: 'SET_EXPLORER_ROOT', payload: url })   
-    auth.fetch(url).then(
+            store.query(query, callback)
+        } catch (error) {
+            dispatch({ type: 'PARSE_EXPLORER_FOLDER_ERROR', payload: error.message })
+        }       
+        dispatch({ type: 'PARSE_EXPLORER_FOLDER_DONE', payload: null })
+    }
+    
+    const fetchFolder = (url, dispatch) => {
+        dispatch({ type: 'SET_EXPLORER_ROOT', payload: url })   
+        auth.fetch(url).then(
         response => {
             if (response.status != '200') 
                 return response.text().then(message => Promise.reject(new Error(message)))

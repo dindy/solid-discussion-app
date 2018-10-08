@@ -43,8 +43,8 @@ class Explorer extends Component {
                 onClose={this.handleClose}
             >
                 <div className={classes.paper}>
+                    {displayProgressBar()}
                     <div className={classes.paperInner}>
-                        <Divider className={classes.hrTop}/>
                         <ListSubheader className={classes.subHeader}>
                             <IconButton
                                 className={classes.parentFolderButton}
@@ -60,10 +60,9 @@ class Explorer extends Component {
                                 className={classes.selectButton}
                                 onClick={this.selectFolder}
                                 >Select</Button>
-                        </ListSubheader>                        
-                        <Divider className={classes.hrBottom}/>
-                        {displayProgressBar()}
-                        <List>
+                        </ListSubheader>      
+                        <Divider className={classes.hrBottom} />                  
+                        <List className={classes.list}>
                             {explorerState.folders
                                 .filter(folder => folder.parent == explorerState.root)
                                 .map(folder => 
