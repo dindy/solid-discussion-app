@@ -15,6 +15,7 @@ class Main extends Component {
             login, 
             userState, 
             discussionsState,
+            discussionFormState,
             newDiscussion, 
             changeNewDiscussionStorage, 
             openExplorer,
@@ -45,7 +46,7 @@ class Main extends Component {
                     userState={userState} 
                     changeNewDiscussionStorage={changeNewDiscussionStorage}
                     openExplorer={openExplorer}
-                    discussionsState={discussionsState}
+                    discussionFormState={discussionFormState}
                     changeNewDiscussionName={changeNewDiscussionName}
                     changeNewDiscussionPath={changeNewDiscussionPath}
                     changeNewDiscussionAddPrivateIndex={changeNewDiscussionAddPrivateIndex}

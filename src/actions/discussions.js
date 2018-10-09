@@ -126,7 +126,7 @@ async function saveNewDiscussion(newDiscussion, webId, privateTypeIndexUrl, disp
         if (indexRelativeUrl != undefined) {
             const indexUrl = getAbsoluteUrl(newDiscussion.storageUrl, indexRelativeUrl)
             dispatch({ type: 'NEW_DISCUSSION_SAVE_SUCCESS', payload: `The discussion has been created at ${indexUrl}` })
-            if (newDiscussion.addToPrivateIndex) {
+            if (newDiscussion.addToPrivateTypeIndex) {
                 await addDiscussionToPrivateRegistry(indexRelativeUrl, privateTypeIndexUrl).then(
                     data => Promise.resolve(data),
                     error => dispatch({ type: 'NEW_DISCUSSION_SAVE_ERROR', payload: error.message })  
@@ -137,19 +137,19 @@ async function saveNewDiscussion(newDiscussion, webId, privateTypeIndexUrl, disp
 } 
 
 export const changeNewDiscussionStorage = storageUrl => dispatch => {
-    dispatch({ type: 'SET_NEW_DISCUSSION_STORAGE_URL', payload: storageUrl })    
+    dispatch({ type: 'NEW_DISCUSSION_STORAGE_URL_UPDATE', payload: storageUrl })    
 }
 
 export const changeNewDiscussionName = name => dispatch => {
-    dispatch({ type: 'SET_NEW_DISCUSSION_NAME', payload: name })    
+    dispatch({ type: 'NEW_DISCUSSION_NAME_UPDATE', payload: name })    
 }
 
 export const changeNewDiscussionPath = path => dispatch => {
-    dispatch({ type: 'SET_NEW_DISCUSSION_PATH', payload: path })    
+    dispatch({ type: 'NEW_DISCUSSION_PATH_UPDATE', payload: path })    
 }
 
 export const changeNewDiscussionAddPrivateIndex = added => dispatch => {
-    dispatch({ type: 'SET_NEW_DISCUSSION_ADD_PRIVATE_INDEX', payload: added })    
+    dispatch({ type: 'NEW_DISCUSSION_ADD_TO_PRIVATE_TYPE_INDEX_UPDATE', payload: added })    
 }
 
 export const cancelNewDiscussion = added => dispatch => {
@@ -160,7 +160,8 @@ export const createNewDiscussion = () => (dispatch, getStore) => {
     dispatch({ type: 'NEW_DISCUSSION_VALIDATE', payload: null })
     const store = getStore()
     const webId = store.user.webId
+    const discussionForm = store.discussionForm
     const privateTypeIndexUrl = store.user.privateTypeIndexUrl
-    if (store.discussions.newDiscussion.isValid) 
-        saveNewDiscussion(store.discussions.newDiscussion, webId, privateTypeIndexUrl, dispatch)      
+    if (discussionForm.isValid) 
+        saveNewDiscussion(discussionForm, webId, privateTypeIndexUrl, dispatch)      
 }

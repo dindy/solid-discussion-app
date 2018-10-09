@@ -34,13 +34,12 @@ class NewDiscussionForm extends Component {
     changeAddToPrivateIndex = e => this.props.changeNewDiscussionAddPrivateIndex(e.target.checked)
 
     selectFolder = e => {
-        const newDiscussion = this.props.discussionsState.newDiscussion
+        const newDiscussion = this.props.discussionFormState
+        const user = this.props.userState
         const storageUrl = (newDiscussion.storageUrl == null) ? 
-            this.props.userState.storages[0] : 
-            newDiscussion.storageUrl 
-        const url = this.props.discussionsState.newDiscussion.path == null ?
-            storageUrl :
-            this.props.discussionsState.newDiscussion.path
+            user.storages[0] : newDiscussion.storageUrl 
+        const url = newDiscussion.path == null ?
+            storageUrl : newDiscussion.path
         this.props.openExplorer(url, storageUrl) 
     }
 
@@ -52,23 +51,23 @@ class NewDiscussionForm extends Component {
 
         const { classes, 
             userState, 
-            discussionsState, 
+            discussionFormState, 
             cancelNewDiscussion, 
             createNewDiscussion 
         } = this.props
 
-        const { newDiscussion } = discussionsState
+        const newDiscussion = discussionFormState
         
         const inputProps = {
             endAdornment: 
-            <InputAdornment position="end">
-                <IconButton
-                    aria-label="Select folder"
-                    onClick={this.selectFolder}
-                    >
-                    <FolderIcon />
-                </IconButton>
-            </InputAdornment>
+                <InputAdornment position="end">
+                    <IconButton
+                        aria-label="Select folder"
+                        onClick={this.selectFolder}
+                        >
+                        <FolderIcon />
+                    </IconButton>
+                </InputAdornment>
         }  
         
         const getRelativePath = () => {
@@ -77,14 +76,13 @@ class NewDiscussionForm extends Component {
         }
         
         const getFinalPath = () => {
-            const newDiscussion = this.props.discussionsState.newDiscussion 
             if (newDiscussion.path == null)
                 return newDiscussion.storageUrl + newDiscussion.folderName + '/'
             return newDiscussion.path + newDiscussion.folderName + '/'
         }
 
         const displayFinalPath = () => {
-            if (this.props.discussionsState.newDiscussion.folderName != null) 
+            if (newDiscussion.folderName != null) 
                 return (
                     <div className={classes.info}>
                         <InfoIcon className={classes.infoIcon}/>
@@ -178,7 +176,7 @@ class NewDiscussionForm extends Component {
                                     control={
                                         <Checkbox
                                             className={classes.checkbox}
-                                            checked={newDiscussion.addToPrivateIndex}
+                                            checked={newDiscussion.addToPrivateTypeIndex}
                                             onChange={this.changeAddToPrivateIndex}
                                             value="checkedA"
                                             />
