@@ -1,3 +1,5 @@
+import * as utils from './utilities'
+
 /*****************/
 /* Reducer shape */
 /*****************/
@@ -124,37 +126,20 @@ const explorerClose = (state, action) => ({ ...state,
 /* Reducer switch */
 /******************/
 
-const layout = (state = initialState, action) => {
-    switch (action.type) {
-        case 'NEW_DISCUSSION_LAUNCH': 
-            return newDiscussionLaunch(state, action)           
-        case 'NEW_DISCUSSION_SAVE_SUCCESS':    
-            return newDiscussionSaveSuccess(state, action) 
-        case 'NEW_DISCUSSION_CANCEL':
-            return newDiscussionCancel(state, action)       
-        case 'TOGGLE_LEFT_DRAWER':
-            return toggleLeftDrawer(state, action)       
-        case 'CLOSE_LEFT_DRAWER':
-            return closeLeftDrawer(state, action)       
-        case 'OPEN_LEFT_DRAWER':
-            return openLeftDrawer(state, action)       
-        case 'SNACKBAR_CLOSE':
-            return snackbarClose(state, action)                   
-        case 'SNACKBAR_EXITED': 
-            return snackbarExited(state, action)                              
-        case 'PARSE_PROFILE_ERROR':                    
-            return parseProfileError(state, action)                              
-        case 'REQUEST_PROFILE_ERROR':    
-            return requestProfileError(state, action)                              
-        case 'NEW_DISCUSSION_SAVE_ERROR':    
-            return newDiscussionSaveError(state, action)                                  
-        case 'EXPLORER_OPEN':
-            return explorerOpen(state, action)
-        case 'EXPLORER_CLOSE':
-            return explorerClose(state, action)                                             
-        default:
-            return state
-    }
-}
-  
-export default layout        
+const discussions = utils.createReducer(initialState, {
+    'NEW_DISCUSSION_LAUNCH' : newDiscussionLaunch,
+    'NEW_DISCUSSION_SAVE_SUCCESS' : newDiscussionSaveSuccess,
+    'NEW_DISCUSSION_CANCEL' : newDiscussionCancel,
+    'TOGGLE_LEFT_DRAWER' : toggleLeftDrawer,
+    'CLOSE_LEFT_DRAWER' : closeLeftDrawer,
+    'OPEN_LEFT_DRAWER' : openLeftDrawer,
+    'SNACKBAR_CLOSE' : snackbarClose,
+    'SNACKBAR_EXITED' : snackbarExited,
+    'PARSE_PROFILE_ERROR' : parseProfileError,
+    'REQUEST_PROFILE_ERROR' : requestProfileError,
+    'NEW_DISCUSSION_SAVE_ERROR' : newDiscussionSaveError,
+    'EXPLORER_OPEN' : explorerOpen,
+    'EXPLORER_CLOSE' : explorerClose,
+});
+
+export default discussions        
