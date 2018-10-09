@@ -1,3 +1,5 @@
+import * as utils from './utilities'
+
 const initialState = {
     authenticated: false,
     webId: null,
@@ -5,63 +7,37 @@ const initialState = {
     avatarUrl: null,
     error: null,
     storages: [],
-    auth: null,
     privateTypeIndexUrl: null,
 }
 
-const addUniqueStorage = (storageUri, storagesState) => (storagesState.includes(storageUri)) ? 
-        storagesState : [...storagesState, storageUri]
+const authenticationSuccess = (state, action) => ({ ...state, 
+    authenticated: true,
+    webId: action.payload.webId  
+})
 
-const user = (state = initialState, action) => {
-    switch (action.type) {
-        case 'AUTHENTICATION_SUCCESS':
-        return {
-            ...state, 
-            authenticated: true,
-            webId: action.payload.webId      
-        }    
-        case 'AUTHENTICATION_ERROR':    
-            return {
-                ...state, 
-                authenticated: false,
-            }    
-        case 'REQUEST_PROFILE_ERROR':    
-            return {
-                ...state, 
-                error: action.payload
-            }    
-        case 'REQUEST_PROFILE_SUCCESS':
-            return {
-                ...state,
-            }           
-        case 'SET_PROFILE_NAME':
-            return {
-                ...state,
-                name: action.payload
-            }           
-        case 'SET_PROFILE_PRIVATE_TYPE_INDEX':
-            return {
-                ...state,
-                privateTypeIndexUrl: action.payload
-            }           
-        case 'SET_PROFILE_AVATAR_URL':
-            return {
-                ...state,
-                avatarUrl: action.payload
-            }           
-        case 'ADD_PROFILE_STORAGE':
-            return {
-                ...state,
-                storages: addUniqueStorage(action.payload, state.storages)
-            }           
-        case 'STORE_AUTH_CLIENT':
-            return {
-                ...state,
-                auth: action.payload
-            }           
-        default:
-            return state
-    }
-}
-  
+const authenticationError = (state, action) => ({ ...state, authenticated: false })
+
+const requestProfileError = (state, action) => ({ ...state, error: action.payload })
+
+const setProfileName = (state, action) => ({ ...state, name: action.payload })
+
+const setProfilePrivateTypeIndex = (state, action) => ({ ...state, privateTypeIndexUrl: action.payload })
+
+const setProfileAvatarUrl = (state, action) => ({ ...state, avatarUrl: action.payload })
+
+const addProfileStorage = (state, action) => ({ ...state, 
+    storages: (state.storages.includes(action.payload)) ? 
+        state.storages : [...state.storages, action.payload] 
+})
+
+const user = utils.createReducer(initialState, {
+    'AUTHENTICATION_SUCCESS': authenticationSuccess,
+    'AUTHENTICATION_ERROR': authenticationError,
+    'REQUEST_PROFILE_ERROR': requestProfileError,
+    'SET_PROFILE_NAME': setProfileName,
+    'SET_PROFILE_PRIVATE_TYPE_INDEX': setProfilePrivateTypeIndex,
+    'SET_PROFILE_AVATAR_URL': setProfileAvatarUrl,
+    'ADD_PROFILE_STORAGE': addProfileStorage,
+})  
+
 export default user        
