@@ -2,13 +2,18 @@ import * as utils from './utilities'
 
 const initialState = {
     authenticated: false,
-    webId: null,
-    name: null,
-    avatarUrl: null,
+    id: null,
     error: null,
     storages: [],
     privateTypeIndexUrl: null,
 }
+
+const merge = (state, action) => ({
+    ...state, 
+    id: action.payload.id || state.id,
+    storages: action.payload.storages || state.storages,
+    privateTypeIndexUrl: action.payload.privateTypeIndexUrl || state.privateTypeIndexUrl,
+})
 
 const authenticationSuccess = (state, action) => ({ ...state, 
     authenticated: true,
@@ -34,7 +39,7 @@ const user = utils.createReducer(initialState, {
     'AUTHENTICATION_SUCCESS': authenticationSuccess,
     'AUTHENTICATION_ERROR': authenticationError,
     'REQUEST_PROFILE_ERROR': requestProfileError,
-    'SET_PROFILE_NAME': setProfileName,
+    'USER_PARSED': merge,
     'SET_PROFILE_PRIVATE_TYPE_INDEX': setProfilePrivateTypeIndex,
     'SET_PROFILE_AVATAR_URL': setProfileAvatarUrl,
     'ADD_PROFILE_STORAGE': addProfileStorage,

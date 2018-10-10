@@ -36,6 +36,7 @@ class App extends Component {
                     toggleLeftDrawer={this.props.toggleLeftDrawer}
                     layoutState={this.props.layoutState} 
                     userState={this.props.userState} 
+                    personsState={this.props.personsState} 
                     />
                 <Main 
                     layoutState={this.props.layoutState} 
@@ -77,6 +78,7 @@ const mapDispatchToProps = dispatch => ({
     login: () => dispatch(userActions.login()),
     recoverSession: () => dispatch(userActions.recoverSession()),
     newDiscussion: () => dispatch(discussionsActions.newDiscussion()),
+    loadDiscussion: (url) => dispatch(discussionsActions.loadDiscussion(url)),
     cancelNewDiscussion: () => dispatch(discussionsActions.cancelNewDiscussion()),
     changeNewDiscussionStorage: storage => dispatch(discussionsActions.changeNewDiscussionStorage(storage)),
     changeNewDiscussionName: name => dispatch(discussionsActions.changeNewDiscussionName(name)),
@@ -96,7 +98,8 @@ const mapStateToProps = state => ({
     userState: state.user,
     explorerState: state.explorer,
     discussionsState: state.discussions,
-    discussionFormState: state.discussionForm
+    discussionFormState: state.discussionForm,
+    personsState: state.entities.persons,
 })
 
 App.propTypes = {

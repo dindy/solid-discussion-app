@@ -18,20 +18,22 @@ class LeftDrawer extends Component {
 
     render() {
 
-        const { classes, theme, layoutState, userState } = this.props
+        const { classes, theme, layoutState, userState, personsState } = this.props
+        const userPerson = personsState.byId[userState.id] || null
+
         const renderUserData = () => {
-            return userState.authenticated ? (
+            return userState.authenticated && userPerson !== null ? (
                 <div>
                     <Avatar
-                        alt={userState.name}
-                        src={userState.avatarUrl}
+                        alt={userPerson.name}
+                        src={userPerson.avatarUrl}
                         className={classNames(classes.avatar, classes.bigAvatar)}
                     />  
                     <Typography className={classes.avatarName} variant="body2" color="textPrimary">
-                        {userState.name}
+                        {userPerson.name}
                     </Typography>                                      
                 </div>
-            ) : <div></div>
+            ) : null
         }
 
         return (

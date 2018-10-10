@@ -48,17 +48,20 @@ function dispatchProfileData(webId, profile, dispatch) {
         const $urlFoafImg = store.any($webId, $hasFoafImg, undefined)
         const $privateTypeIndex = store.any($webId, $hasPrivateTypeIndex, undefined)
         const $pimStorages = store.each($webId, $hasPimStorage, undefined)
+        let person = { id: webId }
 
         if (typeof $literalFoafName !== 'undefined') 
-            dispatch({ type: 'SET_PROFILE_NAME', payload: $literalFoafName.value })
-            else if (typeof $literalVCardName !== 'undefined') 
-            dispatch({ type: 'SET_PROFILE_NAME', payload: $literalVCardName.value })
-
+            person.name = $literalFoafName.value    
+        else if (typeof $literalVCardName !== 'undefined') 
+            person.name = $literalVCardName.value    
+            
         if (typeof $urlFoafImg !== 'undefined') 
-            dispatch({ type: 'SET_PROFILE_AVATAR_URL', payload: $urlFoafImg.value })
-
+            person.avatarUrl = $urlFoafImg.value    
+            
         if (typeof $privateTypeIndex !== 'undefined') 
-            dispatch({ type: 'SET_PROFILE_PRIVATE_TYPE_INDEX', payload: $privateTypeIndex.value })
+            person.privateTypeIndexUrl = $privateTypeIndex.value    
+
+        dispatch({ type: 'USER_PARSED', payload: person })
         
         $pimStorages.forEach($pimStorage => {
             dispatch({ type: 'ADD_PROFILE_STORAGE', payload: $pimStorage.value })
