@@ -1,11 +1,7 @@
 import * as requests from './discussions.requests'
+import $rdf from 'rdflib'
 
-export const newDiscussion = () => dispatch => {
-    dispatch({ type: 'NEW_DISCUSSION_LAUNCH', payload: null })    
-}
-
-
-const getAbsoluteUrl = (baseUrl, relativeUrl) => {
+const computeAbsoluteUrl = (baseUrl, relativeUrl) => {
     if (relativeUrl.substring(0,1) != '/') // not relative 
         return relativeUrl
     else return baseUrl + relativeUrl.substring(1, relativeUrl.length)
@@ -17,24 +13,78 @@ async function saveNewDiscussion(newDiscussion, webId, privateTypeIndexUrl, disp
         data => Promise.resolve(data),
         error => dispatch({ type: 'NEW_DISCUSSION_SAVE_ERROR', payload: error.message })  
     )
+
     if (containerRelativeUrl != undefined) {
-        const containerUrl = getAbsoluteUrl(newDiscussion.storageUrl, containerRelativeUrl)
+        const containerUrl = computeAbsoluteUrl(newDiscussion.storageUrl, containerRelativeUrl)
         const indexRelativeUrl = await requests.saveIndexFile(newDiscussion, webId, containerUrl).then(
             data => Promise.resolve(data),
             error => dispatch({ type: 'NEW_DISCUSSION_SAVE_ERROR', payload: error.message })  
         )
+
         if (indexRelativeUrl != undefined) {
-            const indexUrl = getAbsoluteUrl(newDiscussion.storageUrl, indexRelativeUrl)
+            const indexUrl = computeAbsoluteUrl(newDiscussion.storageUrl, indexRelativeUrl)
             dispatch({ type: 'NEW_DISCUSSION_SAVE_SUCCESS', payload: `The discussion has been created at ${indexUrl}` })
             if (newDiscussion.addToPrivateTypeIndex) {
                 await requests.addDiscussionToPrivateRegistry(indexRelativeUrl, privateTypeIndexUrl).then(
                     data => Promise.resolve(data),
                     error => dispatch({ type: 'NEW_DISCUSSION_SAVE_ERROR', payload: error.message })  
                 )
-            } 
+            }
+            (loadDiscussion(indexUrl))(dispatch)
         }
     }
 } 
+
+async function parseDiscussionFile(discussionFileUrl, discussionFileContent, dispatch) {
+    const mimeType = 'text/turtle'
+    const store = $rdf.graph()
+    try {
+        $rdf.parse(discussionFileContent, store, discussionFileUrl, mimeType)
+        
+        const $indexFile = $rdf.sym(discussionFileUrl)
+        const $hasTitle = $rdf.sym('http://purl.org/dc/terms/title')
+        const $hasSuscriber = $rdf.sym('http://rdfs.org/sioc/ns#has_subscriber')
+        const $accountOf = $rdf.sym('http://rdfs.org/sioc/ns#account_of')
+        const $SiocUser = $rdf.sym('http://rdfs.org/sioc/ns#User')
+        const $SiocThread = $rdf.sym('http://rdfs.org/sioc/ns#Thread')
+        const $hasType = $rdf.sym('http://www.w3.org/1999/02/22-rdf-syntax-ns#type')
+
+        const $discussionTypes = store.each($indexFile, $hasType, undefined)
+        const isAThread = $discussionTypes.filter($type => $type.value === $SiocThread.value).length > 0
+        const $title = store.any($indexFile, $hasTitle, undefined)
+        const $suscribersAccounts = store.each($indexFile, $hasSuscriber, undefined)
+        const $participantsWebIds = $suscribersAccounts.map(($suscriberAccount) => {
+            return store.any($suscriberAccount, $accountOf, undefined)
+        })
+        
+        console.log('$participantsWebIds',$participantsWebIds)
+        console.log('$indexFile',$indexFile)
+    } catch (error) {
+        dispatch({ type: 'DISCUSSION_PARSE_ERROR', payload: error.message })
+    }                    
+}
+
+async function handleLoadDiscussion(indexUrl, dispatch) {
+    console.log('indexUrl',indexUrl)
+    dispatch({ type: 'DISCUSSION_FETCHING', payload: null })
+
+    const discussionFileContent = await requests.fetch(indexUrl).then(
+        data => Promise.resolve(data),
+        error => dispatch({ type: 'DISCUSSION_FETCH_ERROR', payload: error.message })          
+    )
+    
+    if (discussionFileContent != undefined) {
+        const discussion = parseDiscussionFile(indexUrl, discussionFileContent, dispatch)
+        if (!!discussion)
+            dispatch({ type: 'ADD_DISCUSSION', payload: discussion })
+    }
+}
+
+export const loadDiscussion = indexUrl => dispatch => handleLoadDiscussion(indexUrl, dispatch)
+
+export const newDiscussion = () => dispatch => {
+    dispatch({ type: 'NEW_DISCUSSION_LAUNCH', payload: null })    
+}
 
 export const changeNewDiscussionStorage = storageUrl => dispatch => {
     dispatch({ type: 'NEW_DISCUSSION_STORAGE_URL_UPDATE', payload: storageUrl })    

@@ -13,6 +13,7 @@ export async function saveContainer(newDiscussion) {
             'Slug': newDiscussion.folderName,
             // Ask the server to add the type ldp#BasicContainer to the posted document 
             'Link': '<http://www.w3.org/ns/ldp#BasicContainer>; rel="type"',
+            // The document is a turtle document
             'Content-Type': 'text/turtle',
         },
         body
@@ -54,8 +55,11 @@ export async function saveIndexFile(newDiscussion, webId, containerUrl) {
     return auth.fetch(containerUrl, {
         method: 'POST',
         headers: {
+            // Ask the server to use this slug to name the file
             'Slug': 'index',
+            // Ask the server to add the type ldp#Resource to the posted document 
             'Link': '<http://www.w3.org/ns/ldp#Resource>; rel="type"',
+            // The document is a turtle document
             'Content-Type': 'text/turtle',
         },
         body
@@ -90,12 +94,13 @@ export async function addDiscussionToPrivateRegistry (indexRelativeUrl, privateT
     // Send a PATCH request to update the source
     return auth.fetch(privateTypeIndexUrl, {
         method: 'PATCH',
+        // The document is a sparql update query
         headers: { 'Content-Type': 'application/sparql-update' },
         body,
     }).then(
         response => {
             if (response.status.toString().substring(0,2) == '20') 
-                return response.headers.get('Location')
+                return true
             if (response.status == '403') 
                 return Promise.reject(new Error(`You are not authorized to update your private type index.`))
             if (response.status == '401') 
@@ -106,4 +111,16 @@ export async function addDiscussionToPrivateRegistry (indexRelativeUrl, privateT
         },
         error => Promise.reject(new Error(error.message))
     )          
+}
+
+export async function fetch(indexUrl) {
+    return auth.fetch(indexUrl).then(
+        response => {
+            if (response.status != '200') 
+                return response.text().then(message => Promise.reject(new Error(message)))
+            else 
+                return response.text().then(data => Promise.resolve(data))
+        },
+        error => Promise.reject(new Error(error.message))
+    )
 }
