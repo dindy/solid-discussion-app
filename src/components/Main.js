@@ -5,6 +5,7 @@ import { withStyles } from '@material-ui/core/styles'
 import styles from './Main.styles'
 import AddIcon from '@material-ui/icons/Add'
 import NewDiscussionForm from './NewDiscussionForm'
+import LinearProgress from '@material-ui/core/LinearProgress'
 
 class Main extends Component {
 
@@ -40,6 +41,8 @@ class Main extends Component {
             ) : null
         }
 
+        const loader = () => userState.loading ? <LinearProgress className={classes.progressBar}/> : null
+
         const newDiscussionForm = () => {
             return layoutState.newDiscussionForm.open ? (
                 <NewDiscussionForm 
@@ -63,6 +66,8 @@ class Main extends Component {
                     [classes[`contentShift-left`]]: layoutState.leftDrawer.open,
                 })}
             >
+                { loader() }
+
                 { loginButton() }
                 { newDiscussionButton() } 
                 { newDiscussionForm() }

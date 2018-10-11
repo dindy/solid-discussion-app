@@ -63,11 +63,11 @@ export const login = () => dispatch => {
     popupLogin().then(
         session => {
             dispatch({ type: 'AUTHENTICATION_SUCCESS', payload: session })
-            dispatch({ type: 'REQUEST_PROFILE_LAUCH', payload: null })     
+            dispatch({ type: 'REQUEST_USER_PROFILE_LAUNCH', payload: null })     
             // Request the profile
             loadProfile(session.webId, dispatch).then(
-                (parsed) => dispatch({ type: 'REQUEST_PROFILE_SUCCESS', payload: parsed }), 
-                (error) => dispatch({ type: 'REQUEST_PROFILE_ERROR', payload: error })
+                (parsed) => dispatch({ type: 'REQUEST_USER_PROFILE_SUCCESS', payload: parsed }), 
+                (error) => dispatch({ type: 'REQUEST_USER_PROFILE_ERROR', payload: error })
             )
         },
         error => dispatch({ type: 'AUTHENTICATION_ERROR', payload: error })

@@ -11,6 +11,15 @@ const styles = theme => ({
             duration: theme.transitions.duration.leavingScreen,
         }),
     },
+    progressBar: {
+        position: 'absolute',
+        width: '100%',
+        top: 56,
+        left: 0,
+        [theme.breakpoints.up('sm')]: {
+            top: 64,
+        }
+    },
     'content-left': {
         marginLeft: -drawerWidth,
     },

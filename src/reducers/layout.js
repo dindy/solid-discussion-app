@@ -18,7 +18,7 @@ const initialState = {
     },
     explorer: {
         open: false
-    }
+    },
 }
 
 /*********************/
@@ -102,14 +102,6 @@ const snackbarExited = (state, action) => ({ ...state,
     snackbar: handleProcessSnackbarQueue(state.snackbar) 
 })
 
-const parseProfileError = (state, action) => ({ ...state, 
-    snackbar: handleAddSnackbarMessage(state.snackbar, action.payload) 
-})
-
-const requestProfileError = (state, action) => ({ ...state, 
-    snackbar: handleAddSnackbarMessage(state.snackbar, action.payload)         
-})
-
 const newDiscussionSaveError = (state, action) => ({ ...state, 
     snackbar: handleAddSnackbarMessage(state.snackbar, action.payload) 
 })
@@ -120,6 +112,14 @@ const explorerOpen = (state, action) => ({ ...state,
 
 const explorerClose = (state, action) => ({ ...state, 
     explorer: handleOpenClose(state.explorer, false)     
+})
+
+const authenticationError = (state, action) => ({ ...state,
+    snackbar: handleAddSnackbarMessage(state.snackbar, action.payload)         
+})
+
+const requestProfileError = (state, action) => ({ ...state, 
+    snackbar: handleAddSnackbarMessage(state.snackbar, action.payload)         
 })
 
 /******************/
@@ -135,11 +135,11 @@ const discussions = utils.createReducer(initialState, {
     'OPEN_LEFT_DRAWER' : openLeftDrawer,
     'SNACKBAR_CLOSE' : snackbarClose,
     'SNACKBAR_EXITED' : snackbarExited,
-    'PARSE_PROFILE_ERROR' : parseProfileError,
-    'REQUEST_PROFILE_ERROR' : requestProfileError,
     'NEW_DISCUSSION_SAVE_ERROR' : newDiscussionSaveError,
     'EXPLORER_OPEN' : explorerOpen,
     'EXPLORER_CLOSE' : explorerClose,
+    'AUTHENTICATION_ERROR': authenticationError,
+    'REQUEST_PROFILE_ERROR' : requestProfileError,
 });
 
 export default discussions        

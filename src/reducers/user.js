@@ -6,6 +6,7 @@ const initialState = {
     error: null,
     storages: [],
     privateTypeIndexUrl: null,
+    loading: false,
 }
 
 const merge = (state, action) => ({
@@ -14,28 +15,45 @@ const merge = (state, action) => ({
     privateTypeIndexUrl: action.payload.privateTypeIndexUrl || state.privateTypeIndexUrl,
 })
 
-const authenticationLaunch = (state, action) => ({ ...state, error: null })
-
-const authenticationSuccess = (state, action) => ({ ...state, 
-    authenticated: true,
-    id: action.payload.webId  
+const authenticationLaunch = (state, action) => ({ ...state, 
+    error: null,
+    loading: true,
 })
 
-const authenticationError = (state, action) => ({ ...state, authenticated: false, error: action.payload })
+const authenticationSuccess = (state, action) => ({ ...state, 
+    loading: false,
+    authenticated: true,
+    id: action.payload.webId,
+})
 
-const requestProfileLaunch = (state, action) => ({ ...state, error: null })
+const authenticationError = (state, action) => ({ ...state, 
+    loading: false,
+    authenticated: false, 
+    error: action.payload, 
+})
 
-const requestProfileSuccess = (state, action) => merge(state, action)
-
-const requestProfileError = (state, action) => ({ ...state, error: action.payload })
+const requestProfileLaunch = (state, action) => ({ ...state, 
+    loading: true,
+    error: null,
+})
+    
+const requestProfileSuccess = (state, action) => ({ 
+    ...merge(state, action), 
+    loading: false 
+}) 
+    
+const requestProfileError = (state, action) => ({ ...state, 
+    error: action.payload, 
+    loading: false, 
+})
 
 const user = utils.createReducer(initialState, {
     'AUTHENTICATION_LAUNCH': authenticationLaunch,
     'AUTHENTICATION_SUCCESS': authenticationSuccess,
     'AUTHENTICATION_ERROR': authenticationError,
-    'REQUEST_PROFILE_LAUNCH': requestProfileLaunch,
-    'REQUEST_PROFILE_SUCCESS': requestProfileSuccess,
-    'REQUEST_PROFILE_ERROR': requestProfileError,
+    'REQUEST_USER_PROFILE_LAUNCH': requestProfileLaunch,
+    'REQUEST_USER_PROFILE_SUCCESS': requestProfileSuccess,
+    'REQUEST_USER_PROFILE_ERROR': requestProfileError,
 })  
 
 export default user        
