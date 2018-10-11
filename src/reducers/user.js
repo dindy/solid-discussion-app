@@ -10,39 +10,32 @@ const initialState = {
 
 const merge = (state, action) => ({
     ...state, 
-    id: action.payload.id || state.id,
     storages: action.payload.storages || state.storages,
     privateTypeIndexUrl: action.payload.privateTypeIndexUrl || state.privateTypeIndexUrl,
 })
 
+const authenticationLaunch = (state, action) => ({ ...state, error: null })
+
 const authenticationSuccess = (state, action) => ({ ...state, 
     authenticated: true,
-    webId: action.payload.webId  
+    id: action.payload.webId  
 })
 
-const authenticationError = (state, action) => ({ ...state, authenticated: false })
+const authenticationError = (state, action) => ({ ...state, authenticated: false, error: action.payload })
+
+const requestProfileLaunch = (state, action) => ({ ...state, error: null })
+
+const requestProfileSuccess = (state, action) => merge(state, action)
 
 const requestProfileError = (state, action) => ({ ...state, error: action.payload })
 
-const setProfileName = (state, action) => ({ ...state, name: action.payload })
-
-const setProfilePrivateTypeIndex = (state, action) => ({ ...state, privateTypeIndexUrl: action.payload })
-
-const setProfileAvatarUrl = (state, action) => ({ ...state, avatarUrl: action.payload })
-
-const addProfileStorage = (state, action) => ({ ...state, 
-    storages: (state.storages.includes(action.payload)) ? 
-        state.storages : [...state.storages, action.payload] 
-})
-
 const user = utils.createReducer(initialState, {
+    'AUTHENTICATION_LAUNCH': authenticationLaunch,
     'AUTHENTICATION_SUCCESS': authenticationSuccess,
     'AUTHENTICATION_ERROR': authenticationError,
+    'REQUEST_PROFILE_LAUNCH': requestProfileLaunch,
+    'REQUEST_PROFILE_SUCCESS': requestProfileSuccess,
     'REQUEST_PROFILE_ERROR': requestProfileError,
-    'USER_PARSED': merge,
-    'SET_PROFILE_PRIVATE_TYPE_INDEX': setProfilePrivateTypeIndex,
-    'SET_PROFILE_AVATAR_URL': setProfileAvatarUrl,
-    'ADD_PROFILE_STORAGE': addProfileStorage,
 })  
 
 export default user        
