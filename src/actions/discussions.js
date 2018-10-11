@@ -56,9 +56,9 @@ async function parseDiscussionFile(discussionFileUrl, discussionFileContent, dis
         const $participantsWebIds = $suscribersAccounts.map(($suscriberAccount) => {
             return store.any($suscriberAccount, $accountOf, undefined)
         })
-        
+
         console.log('$participantsWebIds',$participantsWebIds)
-        console.log('$indexFile',$indexFile)
+        console.log('$indexFile', $indexFile)
     } catch (error) {
         dispatch({ type: 'DISCUSSION_PARSE_ERROR', payload: error.message })
     }                    
@@ -74,9 +74,9 @@ async function handleLoadDiscussion(indexUrl, dispatch) {
     )
     
     if (discussionFileContent != undefined) {
-        const discussion = parseDiscussionFile(indexUrl, discussionFileContent, dispatch)
+        const discussion = await parseDiscussionFile(indexUrl, discussionFileContent, dispatch)
         if (!!discussion)
-            dispatch({ type: 'ADD_DISCUSSION', payload: discussion })
+            dispatch({ type: 'DISCUSSION_PARSED', payload: discussion })
     }
 }
 

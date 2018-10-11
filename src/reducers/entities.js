@@ -34,9 +34,12 @@ const merge = (state, entityType, entity) => ({
 
 const mergePerson = (state, action) => merge(state, 'persons', action.payload)
 
-const persons = utils.createReducer(initialState, {
+const mergeDiscussion = (state, action) => merge(state, 'discussions', action.payload)
+
+const entities = utils.createReducer(initialState, {
     'PERSON_PARSED' : mergePerson,
     'USER_PARSED' : mergePerson,
+    'DISCUSSION_PARSED' : mergeDiscussion,
 });
 
-export default persons                
+export default entities                

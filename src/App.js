@@ -97,7 +97,7 @@ const mapStateToProps = state => ({
     layoutState: state.layout,
     userState: state.user,
     explorerState: state.explorer,
-    discussionsState: state.discussions,
+    discussionsState: state.entities.discussions,
     discussionFormState: state.discussionForm,
     personsState: state.entities.persons,
 })
