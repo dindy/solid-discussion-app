@@ -1,5 +1,4 @@
 const $rdf = window.$rdf
-
 const store = $rdf.graph();
 const fetcher = new $rdf.Fetcher(store)
 const updater = new $rdf.UpdateManager(store)
@@ -18,7 +17,7 @@ export async function createContainer(parentUri, folderName, data = null) {
 }
 
 export async function createDiscussionIndex(newDiscussion, webId, parentUri) {
-    const data = `
+    const body = `
         @prefix : <#> .
         @prefix sioc: <http://rdfs.org/sioc/ns#> .
         @prefix purl: <http://purl.org/dc/elements/1.1/> .
@@ -43,7 +42,7 @@ export async function createDiscussionIndex(newDiscussion, webId, parentUri) {
             // The document is a turtle document
             'Content-Type': 'text/turtle',
         },
-        data
+        body
     })
 }
 

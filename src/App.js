@@ -17,6 +17,7 @@ class App extends Component {
     
     componentWillMount() {
         this.props.recoverSession()
+        // this.props.loadDiscussion()
         if (window.matchMedia(`(min-width: ${this.props.theme.breakpoints.values.md}px)`).matches) {
             this.props.openLeftDrawer()
         }

@@ -119,7 +119,7 @@ export const cancelNewDiscussion = added => dispatch => {
 export const createNewDiscussion = () => (dispatch, getStore) => {
     dispatch({ type: 'NEW_DISCUSSION_VALIDATE', payload: null })
     const store = getStore()
-    const webId = store.user.webId
+    const webId = store.user.id
     const discussionForm = store.discussionForm
     const privateTypeIndexUrl = store.user.privateTypeIndexUrl
     if (discussionForm.isValid) 
