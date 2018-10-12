@@ -9,6 +9,8 @@ const initialState = {
     folderName: null,
     addToPrivateTypeIndex: true,
     isValid: false,
+    loading: false,
+    saving: false,
 }
 
 const newDiscussionLaunch = (state, action) => state
@@ -41,6 +43,21 @@ const newDiscussionValidate = (state, action) => {
     return { ...state, isValid: true }
 }
 
+const newDiscussionSaving = (state, action) => ({ ...state,
+    saving: true,
+    error: null
+})
+
+const newDiscussionSaveSuccess = (state, action) => ({ ...state,
+    saving: false,
+})
+
+const newDiscussionSaveError = (state, action) => ({ ...state,
+    saving: false,
+    error: action.payload
+})
+
+
 const discussionForm = utils.createReducer(initialState, {
     'NEW_DISCUSSION_LAUNCH' : newDiscussionLaunch,
     'NEW_DISCUSSION_STORAGE_URL_UPDATE' : newDiscussionStorageUrlUpdate,
@@ -49,6 +66,9 @@ const discussionForm = utils.createReducer(initialState, {
     'NEW_DISCUSSION_PATH_UPDATE' : newDiscussionPathUpdate,
     'EXPLORER_SELECT_FOLDER' : newDiscussionPathUpdate,
     'NEW_DISCUSSION_VALIDATE' : newDiscussionValidate,
+    'NEW_DISCUSSION_SAVING' : newDiscussionSaving,
+    'NEW_DISCUSSION_SAVE_SUCCESS' : newDiscussionSaveSuccess,
+    'NEW_DISCUSSION_SAVE_ERROR' : newDiscussionSaveError,
 });
 
 export default discussionForm 

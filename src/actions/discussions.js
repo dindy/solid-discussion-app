@@ -1,5 +1,10 @@
 import * as requests from './discussions.requests'
 import $rdf from 'rdflib'
+import { 
+    createContainer, 
+    createDiscussionIndex, 
+    addDiscussionToPrivateRegistry, 
+} from './api'
 
 const computeAbsoluteUrl = (baseUrl, relativeUrl) => {
     if (relativeUrl.substring(0,1) != '/') // not relative 
@@ -8,16 +13,20 @@ const computeAbsoluteUrl = (baseUrl, relativeUrl) => {
 }
 
 async function saveNewDiscussion(newDiscussion, webId, privateTypeIndexUrl, dispatch) {
+
+    dispatch({ type: 'NEW_DISCUSSION_SAVING', payload: null })
     
-    const containerRelativeUrl = await requests.saveContainer(newDiscussion).then(
-        data => Promise.resolve(data),
+    const parentContainerUri = newDiscussion.path || newDiscussion.storageUrl
+    
+    const containerRelativeUrl = await createContainer(parentContainerUri, newDiscussion.folderName).then(
+        response => Promise.resolve(response.headers.get('Location')),
         error => dispatch({ type: 'NEW_DISCUSSION_SAVE_ERROR', payload: error.message })  
     )
 
     if (containerRelativeUrl != undefined) {
         const containerUrl = computeAbsoluteUrl(newDiscussion.storageUrl, containerRelativeUrl)
-        const indexRelativeUrl = await requests.saveIndexFile(newDiscussion, webId, containerUrl).then(
-            data => Promise.resolve(data),
+        const indexRelativeUrl = await createDiscussionIndex(newDiscussion, webId, containerUrl).then(
+            response => Promise.resolve(response.headers.get('Location')),
             error => dispatch({ type: 'NEW_DISCUSSION_SAVE_ERROR', payload: error.message })  
         )
 
@@ -25,10 +34,14 @@ async function saveNewDiscussion(newDiscussion, webId, privateTypeIndexUrl, disp
             const indexUrl = computeAbsoluteUrl(newDiscussion.storageUrl, indexRelativeUrl)
             dispatch({ type: 'NEW_DISCUSSION_SAVE_SUCCESS', payload: `The discussion has been created at ${indexUrl}` })
             if (newDiscussion.addToPrivateTypeIndex) {
-                await requests.addDiscussionToPrivateRegistry(indexRelativeUrl, privateTypeIndexUrl).then(
+                const privateTypeIndexUri = await addDiscussionToPrivateRegistry(indexUrl, privateTypeIndexUrl).then(
                     data => Promise.resolve(data),
-                    error => dispatch({ type: 'NEW_DISCUSSION_SAVE_ERROR', payload: error.message })  
+                    error => dispatch({ 
+                        type: 'NEW_DISCUSSION_SAVE_ERROR', 
+                        payload: `We couldn't save the discussion in your Private Type Registry : ${error.message}` 
+                    })  
                 )
+                console.log(privateTypeIndexUri)
             }
             (loadDiscussion(indexUrl))(dispatch)
         }
@@ -57,15 +70,12 @@ async function parseDiscussionFile(discussionFileUrl, discussionFileContent, dis
             return store.any($suscriberAccount, $accountOf, undefined)
         })
 
-        console.log('$participantsWebIds',$participantsWebIds)
-        console.log('$indexFile', $indexFile)
     } catch (error) {
         dispatch({ type: 'DISCUSSION_PARSE_ERROR', payload: error.message })
     }                    
 }
 
 async function handleLoadDiscussion(indexUrl, dispatch) {
-    console.log('indexUrl',indexUrl)
     dispatch({ type: 'DISCUSSION_FETCHING', payload: null })
 
     const discussionFileContent = await requests.fetch(indexUrl).then(
