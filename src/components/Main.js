@@ -6,6 +6,7 @@ import styles from './Main.styles'
 import AddIcon from '@material-ui/icons/Add'
 import NewDiscussionForm from './NewDiscussionForm'
 import LinearProgress from '@material-ui/core/LinearProgress'
+import Slide from '@material-ui/core/Slide'
 
 class Main extends Component {
 
@@ -44,19 +45,21 @@ class Main extends Component {
         const loader = () => userState.loading ? <LinearProgress className={classes.progressBar}/> : null
 
         const newDiscussionForm = () => {
-            return layoutState.newDiscussionForm.open ? (
-                <NewDiscussionForm 
-                    userState={userState} 
-                    changeNewDiscussionStorage={changeNewDiscussionStorage}
-                    openExplorer={openExplorer}
-                    discussionFormState={discussionFormState}
-                    changeNewDiscussionName={changeNewDiscussionName}
-                    changeNewDiscussionPath={changeNewDiscussionPath}
-                    changeNewDiscussionAddPrivateIndex={changeNewDiscussionAddPrivateIndex}
-                    cancelNewDiscussion={cancelNewDiscussion}
-                    createNewDiscussion={createNewDiscussion}
-                />
-            ) : null
+            return (
+                <Slide direction="up" in={layoutState.newDiscussionForm.open} mountOnEnter unmountOnExit>
+                    <NewDiscussionForm 
+                        userState={userState} 
+                        changeNewDiscussionStorage={changeNewDiscussionStorage}
+                        openExplorer={openExplorer}
+                        discussionFormState={discussionFormState}
+                        changeNewDiscussionName={changeNewDiscussionName}
+                        changeNewDiscussionPath={changeNewDiscussionPath}
+                        changeNewDiscussionAddPrivateIndex={changeNewDiscussionAddPrivateIndex}
+                        cancelNewDiscussion={cancelNewDiscussion}
+                        createNewDiscussion={createNewDiscussion}
+                    />
+                </Slide>
+            )
         }
 
         return (
