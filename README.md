@@ -79,3 +79,17 @@ The user can only add members to a discussion he owns.
 To do
 
 _______________________
+
+### ⭐️ [SDA-4] A user can load a conversation
+
+#### 📋 Description
+
+A user can load a conversation by hitting a url. The app must display conversation name, messages and participants.
+
+### Implementation 
+
+### 📅 Status
+
+Doing
+
+_______________________
