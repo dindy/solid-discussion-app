@@ -80,11 +80,11 @@ To do
 
 _______________________
 
-### ⭐️ [SDA-4] A user can load a conversation
+### ⭐️ [SDA-4] A user can load a discussion
 
 #### 📋 Description
 
-A user can load a conversation by hitting a url. The app must display conversation name, messages and participants.
+A user can load a discussion by hitting a url. The app must display discussion name, messages and participants.
 
 ### Implementation 
 
