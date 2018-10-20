@@ -4,6 +4,7 @@ import {
     createContainer, 
     createDiscussionIndex, 
     addDiscussionToPrivateRegistry, 
+    loadDiscussion,
 } from './api'
 
 const computeAbsoluteUrl = (baseUrl, relativeUrl) => {
@@ -43,56 +44,31 @@ async function saveNewDiscussion(newDiscussion, webId, privateTypeIndexUrl, disp
                 )
                 console.log(privateTypeIndexUri)
             }
-            (loadDiscussion(indexUrl))(dispatch)
+            handleLoadDiscussion(indexUrl, dispatch)
+            handleSelectDiscussion(indexUrl, dispatch)
         }
     }
 } 
 
-async function parseDiscussionFile(discussionFileUrl, discussionFileContent, dispatch) {
-    const mimeType = 'text/turtle'
-    const store = $rdf.graph()
-    try {
-        $rdf.parse(discussionFileContent, store, discussionFileUrl, mimeType)
-        
-        const $indexFile = $rdf.sym(discussionFileUrl)
-        const $hasTitle = $rdf.sym('http://purl.org/dc/terms/title')
-        const $hasSuscriber = $rdf.sym('http://rdfs.org/sioc/ns#has_subscriber')
-        const $accountOf = $rdf.sym('http://rdfs.org/sioc/ns#account_of')
-        const $SiocUser = $rdf.sym('http://rdfs.org/sioc/ns#User')
-        const $SiocThread = $rdf.sym('http://rdfs.org/sioc/ns#Thread')
-        const $hasType = $rdf.sym('http://www.w3.org/1999/02/22-rdf-syntax-ns#type')
-
-        const $discussionTypes = store.each($indexFile, $hasType, undefined)
-        const isAThread = $discussionTypes.filter($type => $type.value === $SiocThread.value).length > 0
-        const $title = store.any($indexFile, $hasTitle, undefined)
-        const $suscribersAccounts = store.each($indexFile, $hasSuscriber, undefined)
-        const $participantsWebIds = $suscribersAccounts.map(($suscriberAccount) => {
-            return store.any($suscriberAccount, $accountOf, undefined)
-        })
-
-    } catch (error) {
-        dispatch({ type: 'DISCUSSION_PARSE_ERROR', payload: error.message })
-    }                    
+function handleSelectDiscussion(indexUrl, dispatch) {
+    dispatch({ type: 'SELECT_DISCUSSION', payload: indexUrl })    
 }
 
-async function handleLoadDiscussion(indexUrl, dispatch) {
+async function handleLoadDiscussion(indexUrl, dispatch, getStore) {
     dispatch({ type: 'DISCUSSION_FETCHING', payload: null })
 
-    const discussionFileContent = await requests.fetch(indexUrl).then(
-        data => Promise.resolve(data),
+    const discussionFileContent = await loadDiscussion(indexUrl, dispatch, getStore).then(
+        data => dispatch({ type: 'DISCUSSION_FETCH_SUCCESS', payload: null }),
         error => dispatch({ type: 'DISCUSSION_FETCH_ERROR', payload: error.message })          
     )
-    
-    if (discussionFileContent != undefined) {
-        const discussion = await parseDiscussionFile(indexUrl, discussionFileContent, dispatch)
-        if (!!discussion)
-            dispatch({ type: 'DISCUSSION_PARSED', payload: discussion })
-    }
 }
 
-export const loadDiscussion = indexUrl => dispatch => handleLoadDiscussion(indexUrl, dispatch)
+export const openDiscussion = indexUrl => (dispatch, getStore) => handleLoadDiscussion(indexUrl, dispatch, getStore)
+
+export const selectDiscussion = indexUrl => dispatch => handleSelectDiscussion(indexUrl, dispatch)
 
 export const newDiscussion = () => dispatch => {
+    dispatch({ type: 'DESELECT_DISCUSSION', payload: null })    
     dispatch({ type: 'NEW_DISCUSSION_LAUNCH', payload: null })    
 }
 
@@ -112,8 +88,12 @@ export const changeNewDiscussionAddPrivateIndex = added => dispatch => {
     dispatch({ type: 'NEW_DISCUSSION_ADD_TO_PRIVATE_TYPE_INDEX_UPDATE', payload: added })    
 }
 
-export const cancelNewDiscussion = added => dispatch => {
-    dispatch({ type: 'NEW_DISCUSSION_CANCEL', payload: added })    
+export const cancelNewDiscussion = () => dispatch => {
+    dispatch({ type: 'NEW_DISCUSSION_CANCEL', payload: null })    
+}
+
+export const deselectDiscussion = () => dispatch => {
+    dispatch({ type: 'DESELECT_DISCUSSION', payload: null })    
 }
 
 export const createNewDiscussion = () => (dispatch, getStore) => {

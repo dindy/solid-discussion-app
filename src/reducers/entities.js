@@ -8,6 +8,10 @@ const initialState = {
     discussions: {
         byId: [],
         allIds: [],
+    },
+    participants: {
+        byId: [],
+        allIds: [],
     }
 }
 
@@ -36,10 +40,13 @@ const mergePerson = (state, action) => merge(state, 'persons', action.payload)
 
 const mergeDiscussion = (state, action) => merge(state, 'discussions', action.payload)
 
+const mergeParticipant = (state, action) => merge(state, 'participants', action.payload)
+
 const entities = utils.createReducer(initialState, {
     'PERSON_PARSED' : mergePerson,
     'USER_PARSED' : mergePerson,
     'DISCUSSION_PARSED' : mergeDiscussion,
+    'PARTICIPANT_PARSED' : mergeParticipant,
 });
 
 export default entities                

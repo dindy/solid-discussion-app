@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import LeftDrawer from './components/LeftDrawer'
+import DiscussionDrawer from './components/DiscussionDrawer'
 import AppBarWrapper from './components/AppBarWrapper'
 import styles from './App.styles'
 import Main from "./components/Main"
@@ -17,10 +18,20 @@ class App extends Component {
     
     componentWillMount() {
         this.props.recoverSession()
-        // this.props.loadDiscussion()
+        const discussionURI = this.getDiscussionParameter()
+        if (discussionURI !== null) {
+            this.props.openDiscussion(discussionURI)
+            this.props.selectDiscussion(discussionURI)
+        }
         if (window.matchMedia(`(min-width: ${this.props.theme.breakpoints.values.md}px)`).matches) {
             this.props.openLeftDrawer()
         }
+    }
+
+    getDiscussionParameter() {
+        const urlString = window.location.href
+        const url = new URL(urlString)
+        return url.searchParams.get("discussion")        
     }
 
     render() {
@@ -32,13 +43,16 @@ class App extends Component {
                 <AppBarWrapper 
                     toggleLeftDrawer={this.props.toggleLeftDrawer}
                     layoutState={this.props.layoutState} 
+                    discussionsState={this.props.discussionsState} 
                     />
                 <LeftDrawer 
                     toggleLeftDrawer={this.props.toggleLeftDrawer}
                     layoutState={this.props.layoutState} 
                     userState={this.props.userState} 
                     personsState={this.props.personsState} 
-                    />
+                    discussionsState={this.props.discussionsState} 
+                    selectDiscussion={this.props.selectDiscussion} 
+                    />                 
                 <Main 
                     layoutState={this.props.layoutState} 
                     discussionsState={this.props.discussionsState} 
@@ -54,6 +68,14 @@ class App extends Component {
                     cancelNewDiscussion={this.props.cancelNewDiscussion} 
                     createNewDiscussion={this.props.createNewDiscussion} 
                     />
+                <DiscussionDrawer 
+                    layoutState={this.props.layoutState} 
+                    userState={this.props.userState} 
+                    personsState={this.props.personsState} 
+                    discussionsState={this.props.discussionsState} 
+                    toggleDiscussionDrawer={this.props.toggleDiscussionDrawer} 
+                    participantsState={this.props.participantsState} 
+                    />                       
                 <SnackbarNotifications
                     layoutState={this.props.layoutState} 
                     closeSnackbar={this.props.closeSnackbar} 
@@ -68,18 +90,20 @@ class App extends Component {
                     selectFolder={this.props.selectFolder} 
                     />
             </div>
-        );
+        )
     }
 }
 
 const mapDispatchToProps = dispatch => ({
     toggleLeftDrawer: () => dispatch(layoutActions.toggleLeftDrawer()),
+    toggleDiscussionDrawer: () => dispatch(layoutActions.toggleDiscussionDrawer()),
     closeSnackbar: () => dispatch(layoutActions.closeSnackbar()),
     exitedSnackbarCallback: () => dispatch(layoutActions.exitedSnackbarCallback()),
     login: () => dispatch(userActions.login()),
     recoverSession: () => dispatch(userActions.recoverSession()),
     newDiscussion: () => dispatch(discussionsActions.newDiscussion()),
-    loadDiscussion: (url) => dispatch(discussionsActions.loadDiscussion(url)),
+    openDiscussion: url => dispatch(discussionsActions.openDiscussion(url)),
+    selectDiscussion: url => dispatch(discussionsActions.selectDiscussion(url)),
     cancelNewDiscussion: () => dispatch(discussionsActions.cancelNewDiscussion()),
     changeNewDiscussionStorage: storage => dispatch(discussionsActions.changeNewDiscussionStorage(storage)),
     changeNewDiscussionName: name => dispatch(discussionsActions.changeNewDiscussionName(name)),
@@ -98,9 +122,13 @@ const mapStateToProps = state => ({
     layoutState: state.layout,
     userState: state.user,
     explorerState: state.explorer,
-    discussionsState: state.entities.discussions,
+    discussionsState: {
+        ...state.discussions,
+        entities: state.entities.discussions,
+    },
     discussionFormState: state.discussionForm,
     personsState: state.entities.persons,
+    participantsState: state.entities.participants,
 })
 
 App.propTypes = {

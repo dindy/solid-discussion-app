@@ -14,7 +14,12 @@ class AppBarWrapper extends Component {
 
     render() {
 
-        const { classes, layoutState } = this.props
+        const { classes, layoutState, discussionsState } = this.props
+        console.log(this.props)
+        const selectedDiscussion = discussionsState.selected === null ?
+            null : discussionsState.entities.byId[discussionsState.selected] || null
+        const title = selectedDiscussion === null ? 
+            'Solid Discussion App' : selectedDiscussion.title
 
         return (
             <AppBar
@@ -33,7 +38,7 @@ class AppBarWrapper extends Component {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="title" color="inherit" noWrap>
-                        Solid Discussion App
+                        { title }
                     </Typography>
                 </Toolbar>
             </AppBar>

@@ -8,6 +8,9 @@ const initialState = {
     leftDrawer: {
         open: false
     },
+    discussionDrawer: {
+        open: true
+    },
     snackbar: {
         queue: [],
         open: false,
@@ -94,6 +97,18 @@ const openLeftDrawer = (state, action) => ({ ...state,
     leftDrawer: handleOpenClose(state.leftDrawer, true) 
 })
 
+const toggleDiscussionDrawer = (state, action) => ({ ...state, 
+    discussionDrawer: handleOpenClose(state.discussionDrawer, !state.discussionDrawer.open) 
+})
+
+const closeDiscussionDrawer = (state, action) => ({ ...state, 
+    discussionDrawer: handleOpenClose(state.discussionDrawer, false) 
+})
+
+const openDiscussionDrawer = (state, action) => ({ ...state, 
+    discussionDrawer: handleOpenClose(state.discussionDrawer, true) 
+})
+
 const snackbarClose = (state, action) => ({ ...state, 
     snackbar: handleSnackbarClose(state.snackbar, action) 
 })
@@ -133,6 +148,9 @@ const discussions = utils.createReducer(initialState, {
     'TOGGLE_LEFT_DRAWER' : toggleLeftDrawer,
     'CLOSE_LEFT_DRAWER' : closeLeftDrawer,
     'OPEN_LEFT_DRAWER' : openLeftDrawer,
+    'TOGGLE_DISCUSSION_DRAWER' : toggleDiscussionDrawer,
+    'CLOSE_DISCUSSION_DRAWER' : closeDiscussionDrawer,
+    'OPEN_DISCUSSION_DRAWER' : openDiscussionDrawer,
     'SNACKBAR_CLOSE' : snackbarClose,
     'SNACKBAR_EXITED' : snackbarExited,
     'NEW_DISCUSSION_SAVE_ERROR' : newDiscussionSaveError,

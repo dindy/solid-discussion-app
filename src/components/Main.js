@@ -42,7 +42,9 @@ class Main extends Component {
             ) : null
         }
 
-        const loader = () => userState.loading ? <LinearProgress className={classes.progressBar}/> : null
+        const loader = () => userState.loading || discussionsState.loading ? 
+            <LinearProgress className={classes.progressBar}/> 
+            : null
 
         const newDiscussionForm = () => {
             return (

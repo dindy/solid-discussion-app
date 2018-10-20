@@ -94,3 +94,83 @@ export async function loadProfile(webId, dispatch) {
         error => Promise.reject(error.message)
     )
 }
+
+const extractAuthorizationsFromParsedLinkHeader = (authorizationString) => ({
+    read: authorizationString.indexOf('read') !== -1,
+    write: authorizationString.indexOf('write') !== -1,
+    append: authorizationString.indexOf('append') !== -1,
+    control: authorizationString.indexOf('control') !== -1,
+})
+
+const parsePublicLinkHeaderAcl = (str, discussionId, dispatch) => {
+    const publicRegex = /public="((?:[a-z]|\s)+)"/
+    const publicAutorizations = str.match(publicRegex)
+    if (!!publicAutorizations) dispatch({
+        type: 'PARTICIPANT_PARSED',
+        payload: {
+            id: discussionId,
+            personId: null,
+            discussionId: discussionId,
+            ...extractAuthorizationsFromParsedLinkHeader(publicAutorizations[1]),
+        }
+    })
+}
+
+const parseUserLinkHeaderAcl = (str, userWebId, discussionId, dispatch) => {
+    const userRegex = /user="((?:[a-z]|\s)+)"/
+    const userAutorizations = str.match(userRegex)
+    if (!!userAutorizations) dispatch({
+        type: 'PARTICIPANT_PARSED',
+        payload: {
+            id: discussionId + ':' + userWebId,
+            personId: userWebId,
+            discussionId: discussionId,
+            ...extractAuthorizationsFromParsedLinkHeader(userAutorizations[1]),
+        }
+    })
+}
+
+const parseLinkHeaderAcl = (str, userWebId, discussionId, dispatch) => {
+    parseUserLinkHeaderAcl(str, userWebId, discussionId, dispatch)
+    parsePublicLinkHeaderAcl(str, discussionId, dispatch)
+}
+
+const parseDiscussion = (indexFileUri, response, dispatch, getStore) => {
+    const userWebId = getStore()['user']['id']
+    const $indexFileUri = store.sym(indexFileUri)
+    const $discussionTypes = store.each($indexFileUri, $RDF('type'), undefined)
+    const isAThread = $discussionTypes.filter($type => $type.value === $SIOC('Thread').value).length > 0
+    const wacAllowHeader = response.headers.get('WAC-Allow')
+    if (isAThread) {
+        const $title = store.any($indexFileUri, $PURL('title'), undefined)
+        const $suscribersAccounts = store.each($indexFileUri, $SIOC('has_subscriber'), undefined)
+        const $participantsWebIds = $suscribersAccounts.map(($suscriberAccount) => {
+            return store.any($suscriberAccount, $SIOC('account_of'), undefined)
+        })
+        const discussion = {
+            id: indexFileUri,
+            title: $title ? $title.value : null,
+        }
+        dispatch({ type: 'DISCUSSION_PARSED', payload: discussion })
+        $participantsWebIds.forEach($webId => {
+            dispatch({ type: 'PARTICIPANT_PARSED', payload: {
+                id: indexFileUri + ':' + $webId.value,
+                personId: $webId.value,
+                discussionId: indexFileUri,
+                read: true,
+                write: true,
+                append: true,
+            }})
+        })
+        parseLinkHeaderAcl(wacAllowHeader, userWebId, indexFileUri, dispatch)
+    } else {
+        dispatch({ type: 'DISCUSSION_PARSE_ERROR', payload: `We couldn't find a discussion in ${indexFileUri}.` })
+    }    
+}
+
+export async function loadDiscussion(uri, dispatch, getStore) {
+    return fetcher.load(uri).then( 
+        response => parseDiscussion(uri, response, dispatch, getStore),
+        error => Promise.reject(error.message)
+    )
+}

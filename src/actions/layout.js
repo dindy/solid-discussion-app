@@ -11,6 +11,18 @@ export const openLeftDrawer = () => dispatch => {
     dispatch({ type: 'OPEN_LEFT_DRAWER', payload: null })    
 }
 
+export const toggleDiscussionDrawer = () => dispatch => {
+    dispatch({ type: 'TOGGLE_DISCUSSION_DRAWER', payload: null })    
+}
+
+export const closeDiscussionDrawer = () => dispatch => {
+    dispatch({ type: 'CLOSE_DISCUSSION_DRAWER', payload: null })    
+}
+
+export const openDiscussionDrawer = () => dispatch => {
+    dispatch({ type: 'OPEN_DISCUSSION_DRAWER', payload: null })    
+}
+
 export const closeSnackbar = reason => dispatch => {
     dispatch({ type: 'SNACKBAR_CLOSE', payload: reason })    
 }
