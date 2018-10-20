@@ -17,12 +17,18 @@ import * as explorerActions from './actions/explorer';
 class App extends Component {
     
     componentWillMount() {
+        
+        // Recover solid auth session
         this.props.recoverSession()
+
+        // Parse URL to load discussion if any
         const discussionURI = this.getDiscussionParameter()
         if (discussionURI !== null) {
             this.props.openDiscussion(discussionURI)
             this.props.selectDiscussion(discussionURI)
         }
+        
+        // Handle responsive
         if (window.matchMedia(`(min-width: ${this.props.theme.breakpoints.values.md}px)`).matches) {
             this.props.openLeftDrawer()
         }
@@ -42,6 +48,7 @@ class App extends Component {
             <div className={classes.appFrame}>
                 <AppBarWrapper 
                     toggleLeftDrawer={this.props.toggleLeftDrawer}
+                    toggleDiscussionDrawer={this.props.toggleDiscussionDrawer} 
                     layoutState={this.props.layoutState} 
                     discussionsState={this.props.discussionsState} 
                     />

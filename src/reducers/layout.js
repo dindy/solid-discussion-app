@@ -9,7 +9,7 @@ const initialState = {
         open: false
     },
     discussionDrawer: {
-        open: true
+        open: false
     },
     snackbar: {
         queue: [],

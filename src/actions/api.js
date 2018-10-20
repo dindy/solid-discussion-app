@@ -153,6 +153,7 @@ const parseDiscussion = (indexFileUri, response, dispatch, getStore) => {
         }
         dispatch({ type: 'DISCUSSION_PARSED', payload: discussion })
         $participantsWebIds.forEach($webId => {
+            loadProfile($webId.value, dispatch)
             dispatch({ type: 'PARTICIPANT_PARSED', payload: {
                 id: indexFileUri + ':' + $webId.value,
                 personId: $webId.value,

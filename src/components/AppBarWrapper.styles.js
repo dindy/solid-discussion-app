@@ -29,9 +29,21 @@ const styles = theme => ({
     'appBarShift-right': {
         marginRight: drawerWidth,
     },
+    toolBar: {
+        justifyContent: 'space-between',
+        paddingRight: 0
+    },
     menuButton: {
         marginLeft: 12,
         marginRight: 20,
+    },
+    discussionSettingsButtonWrapper: {
+        flexGrow: 1,
+    },
+    discussionSettingsButton: {
+        marginLeft: 12,
+        marginRight: 20,
+        float: 'right',
     },
     hide: {
         display: 'none',
