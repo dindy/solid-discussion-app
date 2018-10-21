@@ -63,6 +63,8 @@ class App extends Component {
                 <Main 
                     layoutState={this.props.layoutState} 
                     discussionsState={this.props.discussionsState} 
+                    messagesState={this.props.messagesState} 
+                    personsState={this.props.personsState} 
                     discussionFormState={this.props.discussionFormState} 
                     userState={this.props.userState} 
                     newDiscussion={this.props.newDiscussion} 
@@ -136,6 +138,7 @@ const mapStateToProps = state => ({
     discussionFormState: state.discussionForm,
     personsState: state.entities.persons,
     participantsState: state.entities.participants,
+    messagesState: state.entities.messages,
 })
 
 App.propTypes = {

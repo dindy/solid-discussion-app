@@ -18,7 +18,7 @@ class AppBarWrapper extends Component {
     render() {
 
         const { classes, layoutState, discussionsState } = this.props
-        console.log(this.props)
+
         const selectedDiscussion = discussionsState.selected === null ?
             null : discussionsState.entities.byId[discussionsState.selected] || null
         const title = selectedDiscussion === null ? 

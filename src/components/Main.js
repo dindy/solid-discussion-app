@@ -5,64 +5,85 @@ import { withStyles } from '@material-ui/core/styles'
 import styles from './Main.styles'
 import AddIcon from '@material-ui/icons/Add'
 import NewDiscussionForm from './NewDiscussionForm'
+import Discussion from './Discussion'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Slide from '@material-ui/core/Slide'
 
 class Main extends Component {
 
-    render() {
-        
-        const { classes, 
-            layoutState, 
-            login, 
-            userState, 
-            discussionsState,
-            discussionFormState,
-            newDiscussion, 
-            changeNewDiscussionStorage, 
-            openExplorer,
-            changeNewDiscussionName,
-            changeNewDiscussionPath,      
-            changeNewDiscussionAddPrivateIndex,     
-            cancelNewDiscussion,
-            createNewDiscussion,
-        } = this.props
-        
-        const loginButton = () => {
-            return !userState.authenticated ? ( 
-                <Button variant="outlined" color="primary" onClick={login}>Log in with Solid</Button>
-            ) : null
-        }
-            
-        const newDiscussionButton = () => {
-            return userState.authenticated && !layoutState.newDiscussionForm.open ? (
-                <Button variant="fab" className={classes.fab} color='primary' onClick={newDiscussion}>
-                    <AddIcon />
-                </Button>                           
-            ) : null
-        }
+    renderLoginButton() {
+        const authenticated = this.props.userState.authenticated
+        const login = this.props.login
 
-        const loader = () => userState.loading || discussionsState.loading ? 
+        return !authenticated ? 
+            <Button variant="outlined" color="primary" onClick={login}>Log in with Solid</Button>
+            : null
+    }
+
+    renderLoader() {
+        const userStateLoading = this.props.userState.loading
+        const discussionsStateLoading = this.props.discussionsState.loading
+        const classes = this.props.classes
+
+        return userStateLoading || discussionsStateLoading ? 
             <LinearProgress className={classes.progressBar}/> 
             : null
+    }
+        
+    renderNewDiscussionButton() {
+        const authenticated = this.props.userState.authenticated 
+        const newDiscussionFormOpen = this.props.layoutState.newDiscussionForm.open
+        const classes = this.props.classes
+        const newDiscussion = this.props.newDiscussion
 
-        const newDiscussionForm = () => {
-            return (
-                <Slide direction="up" in={layoutState.newDiscussionForm.open} mountOnEnter unmountOnExit>
-                    <NewDiscussionForm 
-                        userState={userState} 
-                        changeNewDiscussionStorage={changeNewDiscussionStorage}
-                        openExplorer={openExplorer}
-                        discussionFormState={discussionFormState}
-                        changeNewDiscussionName={changeNewDiscussionName}
-                        changeNewDiscussionPath={changeNewDiscussionPath}
-                        changeNewDiscussionAddPrivateIndex={changeNewDiscussionAddPrivateIndex}
-                        cancelNewDiscussion={cancelNewDiscussion}
-                        createNewDiscussion={createNewDiscussion}
+        return authenticated && !newDiscussionFormOpen ? (
+            <Button variant="fab" className={classes.fab} color='primary' onClick={newDiscussion}>
+                <AddIcon />
+            </Button>                           
+        ) : null
+    }
+    
+    renderNewDiscussionForm() {
+        return (
+            <Slide 
+                direction="up" 
+                in={this.props.layoutState.newDiscussionForm.open} 
+                mountOnEnter 
+                unmountOnExit
+                >
+                <NewDiscussionForm 
+                    userState={this.props.userState} 
+                    changeNewDiscussionStorage={this.props.changeNewDiscussionStorage}
+                    openExplorer={this.props.openExplorer}
+                    discussionFormState={this.props.discussionFormState}
+                    changeNewDiscussionName={this.props.changeNewDiscussionName}
+                    changeNewDiscussionPath={this.props.changeNewDiscussionPath}
+                    changeNewDiscussionAddPrivateIndex={this.props.changeNewDiscussionAddPrivateIndex}
+                    cancelNewDiscussion={this.props.cancelNewDiscussion}
+                    createNewDiscussion={this.props.createNewDiscussion}
                     />
-                </Slide>
-            )
-        }
+            </Slide>
+        )        
+    }
+
+    renderDiscussion() {
+        const selectedDiscussion = this.props.discussionsState.selected
+
+        return selectedDiscussion !== null ? (
+            <Discussion 
+                discussionsState={this.props.discussionsState}
+                messagesState={this.props.messagesState}
+                personsState={this.props.personsState}
+            />
+        ) : null
+    }
+
+    render() {
+        
+        const { 
+            classes, 
+            layoutState, 
+        } = this.props
 
         return (
             <main
@@ -70,14 +91,13 @@ class Main extends Component {
                     [classes.contentShift]: layoutState.leftDrawer.open,
                     [classes[`contentShift-left`]]: layoutState.leftDrawer.open,
                 })}
-            >
-                { loader() }
-
-                { loginButton() }
-                { newDiscussionButton() } 
-                { newDiscussionForm() }
+                >
+                { this.renderLoader() }
+                { this.renderLoginButton() }
+                { this.renderNewDiscussionButton() } 
+                { this.renderNewDiscussionForm() }
+                { this.renderDiscussion() }
             </main>
-            
         )
     }
 }

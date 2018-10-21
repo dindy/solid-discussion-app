@@ -11,6 +11,8 @@ const $PURL = new $rdf.Namespace('http://purl.org/dc/terms/')
 const $SIOC = new $rdf.Namespace('http://rdfs.org/sioc/ns#')
 const $RDF = new $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
 const $RDFS = new $rdf.Namespace('http://www.w3.org/2000/01/rdf-schema#')
+const $PURLE = new $rdf.Namespace('http://purl.org/dc/elements/1.1/')
+const $XML = new $rdf.Namespace('http://www.w3.org/2001/XMLSchema#')
 
 export async function createContainer(parentUri, folderName, data = null) {
     return fetcher.createContainer(parentUri, folderName, data)
@@ -142,16 +144,39 @@ const parseDiscussion = (indexFileUri, response, dispatch, getStore) => {
     const isAThread = $discussionTypes.filter($type => $type.value === $SIOC('Thread').value).length > 0
     const wacAllowHeader = response.headers.get('WAC-Allow')
     if (isAThread) {
+        
+        // title
         const $title = store.any($indexFileUri, $PURL('title'), undefined)
-        const $suscribersAccounts = store.each($indexFileUri, $SIOC('has_subscriber'), undefined)
-        const $participantsWebIds = $suscribersAccounts.map(($suscriberAccount) => {
-            return store.any($suscriberAccount, $SIOC('account_of'), undefined)
-        })
         const discussion = {
             id: indexFileUri,
             title: $title ? $title.value : null,
         }
         dispatch({ type: 'DISCUSSION_PARSED', payload: discussion })
+        
+        // messages
+        const $messages = store.each($indexFileUri, $SIOC('container_of'), undefined)
+        $messages.forEach($message => {
+            const $messageUri = store.sym($message.value)
+            const $content = store.any($messageUri, $SIOC('content'), undefined)
+            const $account = store.any($messageUri, $SIOC('has_creator'), undefined)
+            const $person = store.any($account, $SIOC('account_of'), undefined)
+            const $created = store.any($messageUri, $PURLE('created'), undefined)
+            if (!!$content && !!$person && !!$created)
+                dispatch({ type: 'MESSAGE_PARSED', payload: {
+                   id: $messageUri.value, 
+                   creatorId: $person.value,
+                   content: $content.value,
+                   discussionId: indexFileUri, 
+                   created: new Date($created.value)
+                }})
+        })
+
+        // participants
+        const $suscribersAccounts = store.each($indexFileUri, $SIOC('has_subscriber'), undefined)
+        const $participantsWebIds = $suscribersAccounts.map(($suscriberAccount) => {
+            return store.any($suscriberAccount, $SIOC('account_of'), undefined)
+        })
+        
         $participantsWebIds.forEach($webId => {
             loadProfile($webId.value, dispatch)
             dispatch({ type: 'PARTICIPANT_PARSED', payload: {

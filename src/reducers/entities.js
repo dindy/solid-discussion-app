@@ -2,17 +2,21 @@ import * as utils from './utilities'
 
 const initialState = {
     persons: {
-        byId: [],
+        byId: {},
         allIds: [],
     },
     discussions: {
-        byId: [],
+        byId: {},
         allIds: [],
     },
     participants: {
-        byId: [],
+        byId: {},
         allIds: [],
-    }
+    },
+    messages: {
+        byId: {},
+        allIds: [],
+    },
 }
 
 const exists = (state, entityType, entityId) => state[entityType].allIds.includes(entityId)
@@ -42,11 +46,14 @@ const mergeDiscussion = (state, action) => merge(state, 'discussions', action.pa
 
 const mergeParticipant = (state, action) => merge(state, 'participants', action.payload)
 
+const mergeMessage = (state, action) => merge(state, 'messages', action.payload)
+
 const entities = utils.createReducer(initialState, {
     'PERSON_PARSED' : mergePerson,
     'USER_PARSED' : mergePerson,
     'DISCUSSION_PARSED' : mergeDiscussion,
     'PARTICIPANT_PARSED' : mergeParticipant,
+    'MESSAGE_PARSED' : mergeMessage,
 });
 
 export default entities                
