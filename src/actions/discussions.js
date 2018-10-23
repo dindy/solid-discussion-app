@@ -1,10 +1,9 @@
-import * as requests from './discussions.requests'
-import $rdf from 'rdflib'
 import { 
     createContainer, 
     createDiscussionIndex, 
     addDiscussionToPrivateRegistry, 
     loadDiscussion,
+    initDiscussionAcl,
 } from './api'
 
 const computeAbsoluteUrl = (baseUrl, relativeUrl) => {
@@ -19,21 +18,35 @@ async function saveNewDiscussion(newDiscussion, webId, privateTypeIndexUrl, disp
     
     const parentContainerUri = newDiscussion.path || newDiscussion.storageUrl
     
+    // Save the container
     const containerRelativeUrl = await createContainer(parentContainerUri, newDiscussion.folderName).then(
         response => Promise.resolve(response.headers.get('Location')),
         error => dispatch({ type: 'NEW_DISCUSSION_SAVE_ERROR', payload: error.message })  
     )
 
-    if (containerRelativeUrl != undefined) {
+    // If container saved, save the index file
+    if (typeof containerRelativeUrl !== 'undefined') {
         const containerUrl = computeAbsoluteUrl(newDiscussion.storageUrl, containerRelativeUrl)
         const indexRelativeUrl = await createDiscussionIndex(newDiscussion, webId, containerUrl).then(
             response => Promise.resolve(response.headers.get('Location')),
             error => dispatch({ type: 'NEW_DISCUSSION_SAVE_ERROR', payload: error.message })  
         )
 
-        if (indexRelativeUrl != undefined) {
+        // If index saved, save the .acl and optionally update the type index registry 
+        // Then load the discussion
+        if (typeof indexRelativeUrl !== 'undefined') {
             const indexUrl = computeAbsoluteUrl(newDiscussion.storageUrl, indexRelativeUrl)
-            dispatch({ type: 'NEW_DISCUSSION_SAVE_SUCCESS', payload: `The discussion has been created at ${indexUrl}` })
+            
+            const aclRelativeUrl = await initDiscussionAcl(indexUrl, webId).then(
+                response => Promise.resolve(response.headers.get('Location')),
+                error => dispatch({ type: 'NEW_DISCUSSION_SAVE_ERROR', payload: error.message })                  
+            )
+            
+            if (typeof aclRelativeUrl !== 'undefined') {
+                dispatch({ type: 'NEW_DISCUSSION_SAVE_SUCCESS', payload: `The discussion has been created at ${indexUrl}` })
+
+            }
+
             if (newDiscussion.addToPrivateTypeIndex) {
                 const privateTypeIndexUri = await addDiscussionToPrivateRegistry(indexUrl, privateTypeIndexUrl).then(
                     data => Promise.resolve(data),
@@ -42,6 +55,7 @@ async function saveNewDiscussion(newDiscussion, webId, privateTypeIndexUrl, disp
                         payload: `We couldn't save the discussion in your Private Type Registry : ${error.message}` 
                     })  
                 )
+
                 console.log(privateTypeIndexUri)
             }
             handleLoadDiscussion(indexUrl, dispatch)
