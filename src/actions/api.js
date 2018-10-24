@@ -13,6 +13,7 @@ const $RDF = new $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
 const $RDFS = new $rdf.Namespace('http://www.w3.org/2000/01/rdf-schema#')
 const $PURLE = new $rdf.Namespace('http://purl.org/dc/elements/1.1/')
 const $XML = new $rdf.Namespace('http://www.w3.org/2001/XMLSchema#')
+const $ACL = new $rdf.Namespace('http://www.w3.org/ns/auth/acl#')
 
 export async function createContainer(parentUri, folderName, data = null) {
     return fetcher.createContainer(parentUri, folderName, data)
@@ -208,13 +209,58 @@ const parseDiscussion = (indexFileUri, response, dispatch, getStore) => {
         })
         parseLinkHeaderAcl(wacAllowHeader, userWebId, indexFileUri, dispatch)
     } else {
-        dispatch({ type: 'DISCUSSION_PARSE_ERROR', payload: `We couldn't find a discussion in ${indexFileUri}.` })
+        dispatch({ 
+            type: 'DISCUSSION_PARSE_ERROR', 
+            payload: `We couldn't find a discussion in ${indexFileUri}.` 
+        })
     }    
 }
 
 export async function loadDiscussion(uri, dispatch, getStore) {
     return fetcher.load(uri).then( 
         response => parseDiscussion(uri, response, dispatch, getStore),
+        error => Promise.reject(error.message)
+    )
+}
+
+const parseDiscussionPermissions = (indexUri, aclUri, response, dispatch) => {
+    dispatch({ 
+        type: 'USER_ADD_DISCUSSION_OWNERSHIP', 
+        payload: indexUri 
+    })
+    const $indexFile = store.sym(indexUri)
+    const $aclFile = store.sym(aclUri)
+    const persons = store
+        .each(undefined, $ACL('accessTo'), $indexFile) // Authorizations for the discussion
+        .map($authorization => { // Persons with rights 
+            store
+                .each($authorization, $ACL('agent'))
+                .map($agent => {
+                    dispatch({ type: 'PARTICIPANT_PARSED', payload: {
+                        id: indexUri + ':' + $agent.value,
+                        personId: $agent.value,
+                        discussionId: indexUri,
+                        ...store
+                            .each($authorization, $ACL('mode'))
+                            .reduce((props, $mode) => {
+                                const mode = $mode.value.split('#')[1].toLowerCase()
+                                return ({
+                                    ...props,
+                                    [mode]: true
+                                })
+                            }, {})
+                    }})
+                })
+        })
+        // .map(person => person.value)
+    console.log('persons',persons) 
+}
+
+export async function loadDiscussionPermissions(indexUri, dispatch) {
+    // @TODO : ACL URI should be determined by HTTP Link header
+    const aclUri = indexUri + '.acl'
+    return fetcher.load(aclUri).then( 
+        response => parseDiscussionPermissions(indexUri, aclUri, response, dispatch),
         error => Promise.reject(error.message)
     )
 }

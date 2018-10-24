@@ -4,6 +4,7 @@ import {
     addDiscussionToPrivateRegistry, 
     loadDiscussion,
     initDiscussionAcl,
+    loadDiscussionPermissions,
 } from './api'
 
 const computeAbsoluteUrl = (baseUrl, relativeUrl) => {
@@ -55,9 +56,8 @@ async function saveNewDiscussion(newDiscussion, webId, privateTypeIndexUrl, disp
                         payload: `We couldn't save the discussion in your Private Type Registry : ${error.message}` 
                     })  
                 )
-
-                console.log(privateTypeIndexUri)
             }
+
             handleLoadDiscussion(indexUrl, dispatch)
             handleSelectDiscussion(indexUrl, dispatch)
         }
@@ -75,6 +75,10 @@ async function handleLoadDiscussion(indexUrl, dispatch, getStore) {
         data => dispatch({ type: 'DISCUSSION_FETCH_SUCCESS', payload: null }),
         error => dispatch({ type: 'DISCUSSION_FETCH_ERROR', payload: error.message })          
     )
+
+    if (typeof discussionFileContent !== "undefined") {
+        await loadDiscussionPermissions(indexUrl, dispatch)
+    }
 }
 
 export const openDiscussion = indexUrl => (dispatch, getStore) => handleLoadDiscussion(indexUrl, dispatch, getStore)

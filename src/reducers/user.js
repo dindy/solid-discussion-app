@@ -7,6 +7,7 @@ const initialState = {
     storages: [],
     privateTypeIndexUrl: null,
     loading: false,
+    discussionOwnership: [],
 }
 
 const merge = (state, action) => ({
@@ -47,6 +48,13 @@ const requestProfileError = (state, action) => ({ ...state,
     loading: false, 
 })
 
+const addDiscussionOwnership = (state, action) => ({ ...state, 
+    discussionOwnership: [
+        ...state.discussionOwnership,
+        action.payload
+    ] 
+})
+
 const user = utils.createReducer(initialState, {
     'AUTHENTICATION_LAUNCH': authenticationLaunch,
     'AUTHENTICATION_SUCCESS': authenticationSuccess,
@@ -54,6 +62,7 @@ const user = utils.createReducer(initialState, {
     'REQUEST_USER_PROFILE_LAUNCH': requestProfileLaunch,
     'REQUEST_USER_PROFILE_SUCCESS': requestProfileSuccess,
     'REQUEST_USER_PROFILE_ERROR': requestProfileError,
+    'USER_ADD_DISCUSSION_OWNERSHIP': addDiscussionOwnership,
 })  
 
 export default user        
