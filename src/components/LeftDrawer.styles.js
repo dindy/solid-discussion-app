@@ -13,9 +13,11 @@ const styles = theme => ({
         ...theme.mixins.toolbar,
     },
     drawerHeaderIconButton: {
-        marginTop: 8
+        marginTop: theme.spacing.unit
     },    
-
+    bubbleIcon: {
+        marginRight: theme.spacing.unit
+    },
 
     // Avatars
     row: {
@@ -23,14 +25,14 @@ const styles = theme => ({
         justifyContent: 'center',
     },
     avatar: {
-        margin: 10,
+        margin: theme.spacing.unit,
     },
     bigAvatar: {
-        width: 60,
-        height: 60,
+        width: theme.spacing.unit * 7,
+        height: theme.spacing.unit * 7,
     },  
     avatarName: {
-        margin: 10,
+        margin: theme.spacing.unit,
     },
 })
 

@@ -2,8 +2,11 @@ import React, { Component } from 'react'
 import Drawer from '@material-ui/core/Drawer'
 import Typography from '@material-ui/core/Typography'
 import CloseIcon from '@material-ui/icons/Close'
+import PersonAddIcon from '@material-ui/icons/PersonAdd'
 import IconButton from '@material-ui/core/IconButton'
+import Button from '@material-ui/core/Button'
 import ListSubheader from '@material-ui/core/ListSubheader'
+import Avatar from '@material-ui/core/Avatar'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import classNames from 'classnames'
@@ -28,10 +31,19 @@ class LeftDrawer extends Component {
             } : participant
     })
 
-    displayParticipantsListItems = (participantsState, personsState, discussionId) => this
+    displayParticipantsListItems = (participantsState, personsState, discussionId, classes) => this
         .getParticipants(participantsState, personsState, discussionId)
         .map(participant => (
-            <ListItem key={ participant.id }>{ participant.name }</ListItem>
+            <ListItem key={ participant.id }>
+                    <Avatar
+                        alt={participant.name}
+                        src={participant.avatarUrl}
+                        className={classNames(classes.avatar, classes.mediumAvatar)}
+                    />  
+                    <Typography className={classes.avatarName} variant="body2" color="textPrimary">
+                        {participant.name}
+                    </Typography>                
+            </ListItem>
         ))
 
     render() {
@@ -56,9 +68,6 @@ class LeftDrawer extends Component {
                 classes={{paper: classes.drawerPaper,}}
                 >
                 <div className={classes.drawerHeader}>
-                    <Typography className={classes.title} variant="body2" color="textPrimary">
-                        Parameters
-                    </Typography>                    
                     <IconButton 
                         className={classes.drawerHeaderIconButton} 
                         onClick={this.handleDrawerToggle}
@@ -66,11 +75,16 @@ class LeftDrawer extends Component {
                         <CloseIcon />
                     </IconButton>
                 </div>           
-                <ListSubheader>
-                    Members
+                <ListSubheader className={classes.participantsSubheader}>
+                    Participants
+                    <Button 
+                        className={classes.addParticipantButton}
+                        variant="outlined"
+                        >Add participant
+                    </Button>
                 </ListSubheader>
                 <List>
-                    { this.displayParticipantsListItems(participantsState, personsState, discussionId) }
+                    { this.displayParticipantsListItems(participantsState, personsState, discussionId, classes) }
                 </List>                 
             </Drawer>  
         )

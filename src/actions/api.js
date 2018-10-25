@@ -250,6 +250,7 @@ const parseDiscussionPermissions = (indexUri, aclUri, response, dispatch) => {
                                 })
                             }, {})
                     }})
+                    loadProfile($agent.value, dispatch)
                 })
         })
         // .map(person => person.value)

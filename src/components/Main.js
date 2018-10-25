@@ -8,6 +8,7 @@ import NewDiscussionForm from './NewDiscussionForm'
 import Discussion from './Discussion'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Slide from '@material-ui/core/Slide'
+import AddParticipantForm from './AddParticipantForm';
 
 class Main extends Component {
 
@@ -66,6 +67,20 @@ class Main extends Component {
         )        
     }
 
+    renderAddParticipantForm() {
+        return (
+            <Slide 
+                direction="up" 
+                in={this.props.layoutState.addParticipantForm.open} 
+                mountOnEnter 
+                unmountOnExit
+                >
+                <AddParticipantForm 
+                    />
+            </Slide>            
+        )
+    }
+
     renderDiscussion() {
         const selectedDiscussion = this.props.discussionsState.selected
 
@@ -96,6 +111,7 @@ class Main extends Component {
                 { this.renderLoginButton() }
                 { this.renderNewDiscussionButton() } 
                 { this.renderNewDiscussionForm() }
+                { this.renderAddParticipantForm() }
                 { this.renderDiscussion() }
             </main>
         )

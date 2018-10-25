@@ -5,6 +5,7 @@ import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
+import ChatBubbleOutlineIcon from '@material-ui/icons/ChatBubbleOutline'
 import ListSubheader from '@material-ui/core/ListSubheader'
 import Typography from '@material-ui/core/Typography'
 import Avatar from '@material-ui/core/Avatar'
@@ -39,7 +40,10 @@ class LeftDrawer extends Component {
                         src={userPerson.avatarUrl}
                         className={classNames(classes.avatar, classes.bigAvatar)}
                     />  
-                    <Typography className={classes.avatarName} variant="body2" color="textPrimary">
+                    <Typography className={classes.avatarName} 
+                        variant="body2" 
+                        color="textPrimary"
+                        >
                         {userPerson.name}
                     </Typography>                                      
                 </div>
@@ -54,7 +58,10 @@ class LeftDrawer extends Component {
                     key={id}
                     onClick={this.handleSelectDiscussion(id)}
                     >
-                    {byId[id].title || id}
+                    <ChatBubbleOutlineIcon 
+                        className={classes.bubbleIcon}
+                        />
+                    <Typography>{byId[id].title || id}</Typography>
                 </ListItem>)
             )
         }

@@ -22,6 +22,9 @@ const initialState = {
     explorer: {
         open: false
     },
+    addParticipantForm: {
+        open: true
+    }
 }
 
 /*********************/
