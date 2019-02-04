@@ -1,4 +1,4 @@
-import { drawerWidth } from '../styles/variables'
+import { drawerWidth } from '../../styles/variables'
 
 const styles = theme => ({
     appFrame: {
@@ -31,7 +31,8 @@ const styles = theme => ({
     },
     toolBar: {
         justifyContent: 'space-between',
-        paddingRight: 0
+        paddingRight: 0,
+        paddingLeft: 0,
     },
     menuButton: {
         marginLeft: 12,

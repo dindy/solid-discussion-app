@@ -3,12 +3,11 @@ import classNames from 'classnames'
 import Button from '@material-ui/core/Button'
 import { withStyles } from '@material-ui/core/styles'
 import styles from './Main.styles'
-import AddIcon from '@material-ui/icons/Add'
-import NewDiscussionForm from './NewDiscussionForm'
-import Discussion from './Discussion'
+import NewDiscussionForm from './discussions/NewDiscussionForm'
+import Discussion from './discussions/Discussion'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Slide from '@material-ui/core/Slide'
-import AddParticipantForm from './AddParticipantForm';
+import AddParticipantForm from './participants/AddParticipantForm';
 
 class Main extends Component {
 
@@ -30,19 +29,6 @@ class Main extends Component {
             <LinearProgress className={classes.progressBar}/> 
             : null
     }
-        
-    renderNewDiscussionButton() {
-        const authenticated = this.props.userState.authenticated 
-        const newDiscussionFormOpen = this.props.layoutState.newDiscussionForm.open
-        const classes = this.props.classes
-        const newDiscussion = this.props.newDiscussion
-
-        return authenticated && !newDiscussionFormOpen ? (
-            <Button variant="fab" className={classes.fab} color='primary' onClick={newDiscussion}>
-                <AddIcon />
-            </Button>                           
-        ) : null
-    }
     
     renderNewDiscussionForm() {
         return (
@@ -61,12 +47,12 @@ class Main extends Component {
                     changeNewDiscussionPath={this.props.changeNewDiscussionPath}
                     changeNewDiscussionAddPrivateIndex={this.props.changeNewDiscussionAddPrivateIndex}
                     cancelNewDiscussion={this.props.cancelNewDiscussion}
-                    createNewDiscussion={this.props.createNewDiscussion}
+                    saveNewDiscussion={this.props.saveNewDiscussion}
                     />
             </Slide>
         )        
     }
-
+    
     renderAddParticipantForm() {
         return (
             <Slide 
@@ -76,6 +62,11 @@ class Main extends Component {
                 unmountOnExit
                 >
                 <AddParticipantForm 
+                    addParticipantCancel={this.props.addParticipantCancel}
+                    saveAddParticipant={this.props.saveAddParticipant}
+                    discussionsState={this.props.discussionsState}
+                    participantFormState={this.props.participantFormState}
+                    addParticipantWebIdUpdate={this.props.addParticipantWebIdUpdate}                
                     />
             </Slide>            
         )
@@ -83,8 +74,9 @@ class Main extends Component {
 
     renderDiscussion() {
         const selectedDiscussion = this.props.discussionsState.selected
+        const isOpen = this.props.layoutState.discussion.open
 
-        return selectedDiscussion !== null ? (
+        return isOpen ? (
             <Discussion 
                 discussionsState={this.props.discussionsState}
                 messagesState={this.props.messagesState}
@@ -108,8 +100,7 @@ class Main extends Component {
                 })}
                 >
                 { this.renderLoader() }
-                { this.renderLoginButton() }
-                { this.renderNewDiscussionButton() } 
+                { this.renderLoginButton() } 
                 { this.renderNewDiscussionForm() }
                 { this.renderAddParticipantForm() }
                 { this.renderDiscussion() }

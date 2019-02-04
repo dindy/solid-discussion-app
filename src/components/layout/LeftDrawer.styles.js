@@ -1,4 +1,4 @@
-import { drawerWidth } from '../styles/variables'
+import { drawerWidth } from '../../styles/variables'
 
 const styles = theme => ({
     drawerPaper: {
@@ -9,8 +9,12 @@ const styles = theme => ({
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'space-between',
-        padding: '0 8px',
+        padding: `0 ${2 * theme.spacing.unit}px`,
         ...theme.mixins.toolbar,
+        [theme.breakpoints.up('sm')]: {
+            paddingLeft: 3 * theme.spacing.unit,
+            paddingRight: 3 * theme.spacing.unit,
+        },        
     },
     drawerHeaderIconButton: {
         marginTop: theme.spacing.unit
@@ -25,14 +29,19 @@ const styles = theme => ({
         justifyContent: 'center',
     },
     avatar: {
-        margin: theme.spacing.unit,
+        margin: `${theme.spacing.unit}px 0`,
     },
     bigAvatar: {
         width: theme.spacing.unit * 7,
         height: theme.spacing.unit * 7,
     },  
     avatarName: {
-        margin: theme.spacing.unit,
+        margin: `${theme.spacing.unit}px 0`,
+    },
+    listSubheader: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        margin: `${theme.spacing.unit}px 0`,
     },
 })
 

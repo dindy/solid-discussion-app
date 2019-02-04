@@ -23,7 +23,10 @@ const initialState = {
         open: false
     },
     addParticipantForm: {
-        open: true
+        open: false
+    },
+    discussion: {
+        open: false
     }
 }
 
@@ -74,6 +77,35 @@ const handleOpenClose = (storeObject, value) => ({ ...storeObject, open: value }
 /**************************/
 /* Case reducer functions */
 /**************************/
+
+const addParticipantLauch = (state, action) => ({ ...state, 
+    addParticipantForm: handleOpenClose(state.addParticipantForm, true),
+    discussion: handleOpenClose(state.discussion, false), 
+    discussionDrawer: handleOpenClose(state.discussionDrawer, false),
+})
+
+const selectDiscussion = (state, action) => ({ ...state, 
+    discussion: handleOpenClose(state.discussion, true), 
+    newDiscussionForm: handleOpenClose(state.newDiscussionForm, false),
+})
+
+const deselectDiscussion = (state, action) => ({ ...state, 
+    discussion: handleOpenClose(state.discussion, false),
+    discussionDrawer: handleOpenClose(state.discussionDrawer, false),
+    addParticipantForm: handleOpenClose(state.addParticipantForm, false),
+})
+
+const addParticipantCancel = (state, action) => ({ ...state, 
+    discussion: handleOpenClose(state.discussion, true), 
+    discussionDrawer: handleOpenClose(state.discussionDrawer, false),
+    addParticipantForm: handleOpenClose(state.addParticipantForm, false) 
+})
+
+const addParticipantClose = (state, action) => ({...state,
+    discussionDrawer: handleOpenClose(state.discussionDrawer, true),
+    discussion: handleOpenClose(state.discussion, true), 
+    addParticipantForm: handleOpenClose(state.addParticipantForm, false) 
+})
 
 const newDiscussionLaunch = (state, action) => ({ ...state, 
     newDiscussionForm: handleOpenClose(state.newDiscussionForm, true) 
@@ -140,6 +172,10 @@ const requestProfileError = (state, action) => ({ ...state,
     snackbar: handleAddSnackbarMessage(state.snackbar, action.payload)         
 })
 
+const discussionFetchError = (state, action) => ({ ...state, 
+    snackbar: handleAddSnackbarMessage(state.snackbar, action.payload)         
+})
+
 /******************/
 /* Reducer switch */
 /******************/
@@ -160,7 +196,13 @@ const discussions = utils.createReducer(initialState, {
     'EXPLORER_OPEN' : explorerOpen,
     'EXPLORER_CLOSE' : explorerClose,
     'AUTHENTICATION_ERROR': authenticationError,
-    'REQUEST_PROFILE_ERROR' : requestProfileError,
+    'REQUEST_USER_PROFILE_ERROR' : requestProfileError,
+    'ADD_PARTICIPANT_LAUNCH' : addParticipantLauch,
+    'ADD_PARTICIPANT_CANCEL' : addParticipantCancel,
+    'SELECT_DISCUSSION' : selectDiscussion,
+    'DESELECT_DISCUSSION' : deselectDiscussion,
+    'ADD_PARTICIPANT_SUCCESS' : addParticipantClose,
+    'DISCUSSION_FETCH_ERROR' : discussionFetchError,
 });
 
 export default discussions        

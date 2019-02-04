@@ -82,6 +82,44 @@ export async function addDiscussionToPrivateRegistry(discussionIndexRelativeUri,
     })       
 }
 
+export async function addParticipantToDiscussion(webId, discussionUri) {
+    const $bNode = store.bnode()
+    const $discussionIndex = store.sym(discussionUri)
+    const $webId = store.sym(webId)
+    const ins = [
+        $rdf.st($discussionIndex, $SIOC('has_subscriber'), $bNode, $discussionIndex),
+        $rdf.st($bNode, $RDF('type'), $SIOC('User'), $discussionIndex),
+        $rdf.st($bNode, $SIOC('account_of'), $webId, $discussionIndex),
+    ]
+    updater.update([], ins, (uri, ok, message) => {
+        if (ok) return uri
+        else return new Error(message)
+    })     
+}
+
+export async function addParticipantAuthorizationsToDiscussion(webId, discussionUri, authorizations) {
+    const $bNode = store.bnode()
+    // @TODO : ACL URI should be determined by HTTP Link header
+    const $discussionAcl = store.sym(discussionUri + '.acl')
+    const $discussionIndex = store.sym(discussionUri)
+    const $webId = store.sym(webId)
+    let ins = [
+        $rdf.st($bNode, $RDF('type'), $ACL('Authorization'), $discussionAcl),
+        $rdf.st($bNode, $ACL('agent'), $webId, $discussionAcl),
+        $rdf.st($bNode, $ACL('accessTo'), $discussionIndex, $discussionAcl),
+    ]
+    authorizations.forEach(authorization => {
+        ins = [
+            ...ins,
+            $rdf.st($bNode, $ACL('mode'), $ACL(authorization), $discussionAcl),            
+        ]        
+    })
+    updater.update([], ins, (uri, ok, message) => {
+        if (ok) return uri
+        else return new Error(message)
+    })  
+}
+
 const parseProfile = (webId, dispatch) => {
     const $webId = store.sym(webId)
 
@@ -114,6 +152,10 @@ export async function loadProfile(webId, dispatch) {
         response => parseProfile(webId, dispatch),
         error => Promise.reject(error.message)
     )
+}
+
+export async function checkProfile(webId) {
+    return fetcher.load(webId)
 }
 
 const extractAuthorizationsFromParsedLinkHeader = (authorizationString) => ({

@@ -1,9 +1,9 @@
-import { drawerWidth } from '../styles/variables'
+import { drawerWidth } from '../../styles/variables'
 
 const styles = theme => ({
     drawerPaper: {
         // maxWidth: `calc(100vw - ${drawerWidth * 2 + theme.spacing.unit}px)`,
-        width: drawerWidth
+        width: drawerWidth,
     },
     drawerHeader: {
         display: 'flex',
@@ -15,11 +15,6 @@ const styles = theme => ({
     title: {
         padding: theme.spacing.unit
     },      
-    participantsSubheader: {
-        display: 'flex',
-        alignItems: 'flex-start',
-        flexDirection: 'column',
-    },
     avatar: {
         margin: theme.spacing.unit,
     },
@@ -29,7 +24,12 @@ const styles = theme => ({
     },  
     avatarName: {
         margin: theme.spacing.unit,
-    },      
+    },  
+    listSubheader: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        margin: `${theme.spacing.unit}px 0`,
+    },        
 })
 
 export default styles

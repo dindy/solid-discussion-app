@@ -1,4 +1,4 @@
-import card from '../styles/card'
+import card from '../../styles/card'
  
 const styles = theme => ({
     ...card(theme),
@@ -61,6 +61,16 @@ const styles = theme => ({
     infoTextUrl: {
         fontWeight: 'bold'
     },
+    cardHeader: {
+        marginLeft: 8,
+        marginRight: 8,
+        paddingLeft: 16,
+        paddingRight: 16,
+        [theme.breakpoints.up('sm')]: {
+            paddingRight: 24,
+            paddingLeft: 24,
+        }
+    }
 })
 
 export default styles

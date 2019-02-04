@@ -11,7 +11,7 @@ async function popupLogin() {
 }
 
 export const recoverSession = () => (dispatch) => {
-    auth.currentSession().then( session => {
+    return auth.currentSession().then( session => {
         if (!!session) dispatch(login())
     })
 } 

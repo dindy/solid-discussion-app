@@ -53,7 +53,7 @@ class NewDiscussionForm extends Component {
             userState, 
             discussionFormState, 
             cancelNewDiscussion, 
-            createNewDiscussion 
+            saveNewDiscussion 
         } = this.props
 
         const newDiscussion = discussionFormState
@@ -191,7 +191,7 @@ class NewDiscussionForm extends Component {
                     </form>
                 </CardContent>
                 <CardActions>
-                    <Button onClick={createNewDiscussion} color="primary">Create</Button>
+                    <Button onClick={saveNewDiscussion} color="primary">Create</Button>
                     <Button onClick={cancelNewDiscussion}>Cancel</Button>
                 </CardActions>
             </Card>                    

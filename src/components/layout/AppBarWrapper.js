@@ -36,7 +36,7 @@ class AppBarWrapper extends Component {
                         color="inherit"
                         aria-label="Open drawer"
                         onClick={this.handleDrawerToggle}
-                        className={classNames(classes.menuButton, layoutState.leftDrawer.open && classes.hide)}
+                        className={classNames(classes.menuButton/*, layoutState.leftDrawer.open && classes.hide*/)}
                         >
                         <MenuIcon />
                     </IconButton>

@@ -14,7 +14,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import FolderIcon from '@material-ui/icons/Folder'
 import HomeIcon from '@material-ui/icons/Home'
-import { selectFolder } from '../actions/explorer'
+import { selectFolder } from '../../actions/explorer'
 import LinearProgress from '@material-ui/core/LinearProgress'
 
 class Explorer extends Component {

@@ -1,28 +1,28 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
-import LeftDrawer from './components/LeftDrawer'
-import DiscussionDrawer from './components/DiscussionDrawer'
-import AppBarWrapper from './components/AppBarWrapper'
+import LeftDrawer from './components/layout/LeftDrawer'
+import DiscussionDrawer from './components/layout/DiscussionDrawer'
+import AppBarWrapper from './components/layout/AppBarWrapper'
 import styles from './App.styles'
 import Main from "./components/Main"
-import SnackbarNotifications from "./components/SnackbarNotifications"
-import Explorer from "./components/Explorer"
+import SnackbarNotifications from "./components/layout/SnackbarNotifications"
+import Explorer from "./components/explorer/Explorer"
 import { connect } from 'react-redux'
 import * as layoutActions from './actions/layout'
 import * as userActions from './actions/user'
-import * as discussionsActions from './actions/discussions';
-import * as explorerActions from './actions/explorer';
+import * as discussionsActions from './actions/discussions'
+import * as explorerActions from './actions/explorer'
 
 class App extends Component {
     
     componentWillMount() {
         
-        // Recover solid auth session
+        // Recover solid auth session (can be an outdated session resulting in 401 when fetching profile)
         this.props.recoverSession()
 
         // Parse URL to load discussion if any
-        const discussionURI = this.getDiscussionParameter()
+        const discussionURI = this.getParameterFromUrl('discussion')
         if (discussionURI !== null) {
             this.props.openDiscussion(discussionURI)
             this.props.selectDiscussion(discussionURI)
@@ -34,10 +34,15 @@ class App extends Component {
         }
     }
 
-    getDiscussionParameter() {
+    /**
+    * Search for the value of the given key in URL parameters
+    * @param {string} The key to look for
+    * @returns {string|null} New object with merged key/values
+    */
+    getParameterFromUrl(key) {
         const urlString = window.location.href
         const url = new URL(urlString)
-        return url.searchParams.get("discussion")        
+        return url.searchParams.get(key)       
     }
 
     render() {
@@ -59,6 +64,7 @@ class App extends Component {
                     personsState={this.props.personsState} 
                     discussionsState={this.props.discussionsState} 
                     selectDiscussion={this.props.selectDiscussion} 
+                    newDiscussion={this.props.newDiscussion} 
                     />                 
                 <Main 
                     layoutState={this.props.layoutState} 
@@ -67,7 +73,6 @@ class App extends Component {
                     personsState={this.props.personsState} 
                     discussionFormState={this.props.discussionFormState} 
                     userState={this.props.userState} 
-                    newDiscussion={this.props.newDiscussion} 
                     changeNewDiscussionStorage={this.props.changeNewDiscussionStorage} 
                     login={this.props.login}                    
                     openExplorer={this.props.openExplorer} 
@@ -75,9 +80,14 @@ class App extends Component {
                     changeNewDiscussionPath={this.props.changeNewDiscussionPath}                    
                     changeNewDiscussionAddPrivateIndex={this.props.changeNewDiscussionAddPrivateIndex}                    
                     cancelNewDiscussion={this.props.cancelNewDiscussion} 
-                    createNewDiscussion={this.props.createNewDiscussion} 
+                    saveNewDiscussion={this.props.saveNewDiscussion} 
+                    addParticipantCancel={this.props.addParticipantCancel} 
+                    saveAddParticipant={this.props.saveAddParticipant} 
+                    participantFormState={this.props.participantFormState} 
+                    addParticipantWebIdUpdate={this.props.addParticipantWebIdUpdate} 
                     />
                 <DiscussionDrawer 
+                    addParticipant={this.props.addParticipant} 
                     layoutState={this.props.layoutState} 
                     userState={this.props.userState} 
                     personsState={this.props.personsState} 
@@ -118,13 +128,17 @@ const mapDispatchToProps = dispatch => ({
     changeNewDiscussionName: name => dispatch(discussionsActions.changeNewDiscussionName(name)),
     changeNewDiscussionPath: path => dispatch(discussionsActions.changeNewDiscussionPath(path)),
     changeNewDiscussionAddPrivateIndex: added => dispatch(discussionsActions.changeNewDiscussionAddPrivateIndex(added)),
-    createNewDiscussion: () => dispatch(discussionsActions.createNewDiscussion()),
+    saveNewDiscussion: () => dispatch(discussionsActions.saveNewDiscussion()),
     openExplorer: (rootUrl, storageUrl) => dispatch(explorerActions.openExplorer(rootUrl, storageUrl)),
     exploreFolder: rootUrl => dispatch(explorerActions.exploreFolder(rootUrl)),
     selectFolder: url => dispatch(explorerActions.selectFolder(url)),
     exploreParentFolder: () => dispatch(explorerActions.exploreParentFolder()),
     closeExplorer: () => dispatch(layoutActions.closeExplorer()),
     openLeftDrawer: () => dispatch(layoutActions.openLeftDrawer()),
+    addParticipant: () => dispatch(discussionsActions.addParticipant()),
+    addParticipantCancel: () => dispatch(discussionsActions.addParticipantCancel()),
+    saveAddParticipant: (discussionId, webId) => dispatch(discussionsActions.saveAddParticipant(discussionId, webId)),
+    addParticipantWebIdUpdate: (webId) => dispatch(discussionsActions.addParticipantWebIdUpdate(webId)),
 })
 
 const mapStateToProps = state => ({
@@ -136,6 +150,7 @@ const mapStateToProps = state => ({
         entities: state.entities.discussions,
     },
     discussionFormState: state.discussionForm,
+    participantFormState: state.participantForm,
     personsState: state.entities.persons,
     participantsState: state.entities.participants,
     messagesState: state.entities.messages,

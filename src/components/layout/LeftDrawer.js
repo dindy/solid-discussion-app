@@ -13,12 +13,27 @@ import ListItem from '@material-ui/core/ListItem'
 import classNames from 'classnames'
 import { withStyles } from '@material-ui/core/styles'
 import styles from './LeftDrawer.styles'
+import Button from '@material-ui/core/Button'
+import AddIcon from '@material-ui/icons/Add'
 
 class LeftDrawer extends Component {
 
     handleDrawerToggle = () => this.props.toggleLeftDrawer()
     
     handleSelectDiscussion = (uri) => () => this.props.selectDiscussion(uri)
+
+    renderNewDiscussionButton() {
+        const authenticated = this.props.userState.authenticated 
+        const newDiscussionFormOpen = this.props.layoutState.newDiscussionForm.open
+        const classes = this.props.classes
+        const newDiscussion = this.props.newDiscussion
+
+        return authenticated && !newDiscussionFormOpen ? (
+            <IconButton className={classes.addButton} onClick={newDiscussion}>
+                <AddIcon />
+            </IconButton>                           
+        ) : null
+    }
 
     render() {
         const { 
@@ -57,6 +72,7 @@ class LeftDrawer extends Component {
                     button 
                     key={id}
                     onClick={this.handleSelectDiscussion(id)}
+                    selected={discussionsState.selected == id}
                     >
                     <ChatBubbleOutlineIcon 
                         className={classes.bubbleIcon}
@@ -75,16 +91,19 @@ class LeftDrawer extends Component {
             >
                 <div className={classes.drawerHeader}>
                     {renderUserData()}
-                    <IconButton className={classes.drawerHeaderIconButton} onClick={this.handleDrawerToggle}>
+                    {/* <IconButton className={classes.drawerHeaderIconButton} onClick={this.handleDrawerToggle}>
                         {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-                    </IconButton>
+                    </IconButton> */}
                 </div>
-   
+                
                 <Divider />
-                <ListSubheader>
-                    Discussions
-                </ListSubheader>
-                <List>
+                <List
+                    component="nav"
+                    subheader={<ListSubheader
+                            className={classes.listSubheader}    
+                            >Discussions{ this.renderNewDiscussionButton() }
+                        </ListSubheader>}
+                >
                     {discussionsList()}
                 </List>
             </Drawer>  

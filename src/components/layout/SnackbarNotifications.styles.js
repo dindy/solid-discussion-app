@@ -1,4 +1,4 @@
-import { drawerWidth } from '../styles/variables'
+import { drawerWidth } from '../../styles/variables'
 
 const styles = theme => ({
     snackbar: {
