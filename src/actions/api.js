@@ -172,6 +172,7 @@ const parsePublicLinkHeaderAcl = (str, discussionId, dispatch) => {
         type: 'PARTICIPANT_PARSED',
         payload: {
             id: discussionId,
+            function: 'parsePublicLinkHeaderAcl',
             personId: null,
             discussionId: discussionId,
             ...extractAuthorizationsFromParsedLinkHeader(publicAutorizations[1]),
@@ -185,6 +186,7 @@ const parseUserLinkHeaderAcl = (str, userWebId, discussionId, dispatch) => {
     if (!!userAutorizations) dispatch({
         type: 'PARTICIPANT_PARSED',
         payload: {
+            function: 'parseUserLinkHeaderAcl',
             id: discussionId + ':' + userWebId,
             personId: userWebId,
             discussionId: discussionId,
@@ -198,8 +200,7 @@ const parseLinkHeaderAcl = (str, userWebId, discussionId, dispatch) => {
     parsePublicLinkHeaderAcl(str, discussionId, dispatch)
 }
 
-const parseDiscussion = (indexFileUri, response, dispatch, getStore) => {
-    const userWebId = getStore()['user']['id']
+const parseDiscussion = (indexFileUri, response, dispatch, userWebId) => {
     const $indexFileUri = store.sym(indexFileUri)
     const $discussionTypes = store.each($indexFileUri, $RDF('type'), undefined)
     const isAThread = $discussionTypes.filter($type => $type.value === $SIOC('Thread').value).length > 0
@@ -241,6 +242,7 @@ const parseDiscussion = (indexFileUri, response, dispatch, getStore) => {
         $participantsWebIds.forEach($webId => {
             loadProfile($webId.value, dispatch)
             dispatch({ type: 'PARTICIPANT_PARSED', payload: {
+                function: 'parseDiscussion',
                 id: indexFileUri + ':' + $webId.value,
                 personId: $webId.value,
                 discussionId: indexFileUri,
@@ -258,9 +260,9 @@ const parseDiscussion = (indexFileUri, response, dispatch, getStore) => {
     }    
 }
 
-export async function loadDiscussion(uri, dispatch, getStore) {
+export async function loadDiscussion(uri, dispatch, userWebId) {
     return fetcher.load(uri).then( 
-        response => parseDiscussion(uri, response, dispatch, getStore),
+        response => parseDiscussion(uri, response, dispatch, userWebId),
         error => Promise.reject(error.message)
     )
 }
@@ -279,6 +281,7 @@ const parseDiscussionPermissions = (indexUri, aclUri, response, dispatch) => {
                 .each($authorization, $ACL('agent'))
                 .map($agent => {
                     dispatch({ type: 'PARTICIPANT_PARSED', payload: {
+                        function: 'parseDiscussionPermissions',
                         id: indexUri + ':' + $agent.value,
                         personId: $agent.value,
                         discussionId: indexUri,

@@ -51,13 +51,13 @@ async function handleSaveNewDiscussion(newDiscussion, webId, privateTypeIndexUrl
             }
 
             // Then load the discussion
-            handleLoadDiscussion(indexUrl, dispatch)
+            handleLoadDiscussion(indexUrl, dispatch, webId)
             handleSelectDiscussion(indexUrl, dispatch)
         }
     }
-} 
+}
 
-async function handleSaveAddParticipant(webId, discussionUri, dispatch, getStore) {
+async function handleSaveAddParticipant(webId, discussionUri, dispatch) {
     console.log('webId',webId)
     console.log('discussionUri',discussionUri)
     dispatch({ type: 'ADD_PARTICIPANT_SAVING', payload: null })
@@ -85,7 +85,7 @@ async function handleSaveAddParticipant(webId, discussionUri, dispatch, getStore
             
             if (authorizationAdded === true) {
                 dispatch({ type: 'ADD_PARTICIPANT_SUCCESS', payload: null })
-                api.loadDiscussion(discussionUri, dispatch, getStore)
+                api.loadDiscussion(discussionUri, dispatch, webId)
             }
         }
     }
@@ -95,12 +95,11 @@ function handleSelectDiscussion(indexUrl, dispatch) {
     dispatch({ type: 'SELECT_DISCUSSION', payload: indexUrl })    
 }
 
-async function handleLoadDiscussion(indexUrl, dispatch, getStore) {
+async function handleLoadDiscussion(indexUrl, dispatch, userWebId) {
     dispatch({ type: 'DISCUSSION_FETCHING', payload: null })
-
-    const discussionFileContent = await api.loadDiscussion(indexUrl, dispatch, getStore).then(
+    const discussionFileContent = await api.loadDiscussion(indexUrl, dispatch, userWebId).then(
         data => dispatch({ type: 'DISCUSSION_FETCH_SUCCESS', payload: null }),
-        error => dispatch({ type: 'DISCUSSION_FETCH_ERROR', payload: error })          
+        error => dispatch({ type: 'DISCUSSION_FETCH_ERROR', payload: error.message })          
     )
 
     if (typeof discussionFileContent !== "undefined") {
@@ -108,9 +107,9 @@ async function handleLoadDiscussion(indexUrl, dispatch, getStore) {
     }
 }
 
-export const openDiscussion = indexUrl => (dispatch, getStore) => handleLoadDiscussion(indexUrl, dispatch, getStore)
+export const openDiscussion = indexUrl => (dispatch, getStore) => handleLoadDiscussion(indexUrl, dispatch, getStore()['user']['id'])
 
-export const selectDiscussion = indexUrl => dispatch => handleSelectDiscussion(indexUrl, dispatch)
+export const selectDiscussion = indexUrl => (dispatch) => handleSelectDiscussion(indexUrl, dispatch)
 
 export const newDiscussion = () => dispatch => {
     dispatch({ type: 'DESELECT_DISCUSSION', payload: null })    
@@ -159,11 +158,11 @@ export const addParticipantCancel = () => dispatch => {
     dispatch({ type: 'ADD_PARTICIPANT_CANCEL', payload: null })    
 }
 
-export const saveAddParticipant = (webId, discussionUri) => (dispatch, getStore) => {
+export const saveAddParticipant = (webId, discussionUri) => (dispatch) => {
     // dispatch({ type: 'ADD_PARTICIPANT_VALIDATE', payload: null })
     // const store = getStore()
     // if (store.participantForm.isValid) 
-        handleSaveAddParticipant(webId, discussionUri, dispatch, getStore)
+        handleSaveAddParticipant(webId, discussionUri, dispatch)
 }
 
 
