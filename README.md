@@ -65,12 +65,11 @@ Done
 
 _______________________
 
-### ⭐️ [SDA-3] A user can invite participants
+### ⭐️ [SDA-3] A user can add participants
 
 #### 📋 Description
 
-Once a discussion is created the user can invite other people to participate by sending them an invitation with an appropriate link. 
-The user can only add members to a discussion he owns.
+Once a discussion is created the user can add participants by adding their webids. 
 
 ### Implementation 
 
@@ -92,4 +91,32 @@ A user can load a discussion by hitting a url. The app must display discussion n
 
 Doing
 
+_______________________
+
+### ⭐️ [SDA-5] A user can post messages
+
+#### 📋 Description
+
+A user can post messages.
+
+### Implementation 
+
+### 📅 Status
+
+To Do
+
+_______________________
+
+### ⭐️ [SDA-6] A user can invite participants
+
+#### 📋 Description
+
+Once a discussion is created the user can invite other people to participate by sending them an invitation with an appropriate link. 
+The user can only add members to a discussion he owns.
+
+### Implementation 
+
+### 📅 Status
+
+To Do
 _______________________
