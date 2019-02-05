@@ -1,4 +1,4 @@
-import * as api from './api'
+import * as api from '../api/api'
 
 const computeAbsoluteUrl = (baseUrl, relativeUrl) => {
     if (relativeUrl.substring(0,1) != '/') // not relative 
@@ -6,7 +6,7 @@ const computeAbsoluteUrl = (baseUrl, relativeUrl) => {
     else return baseUrl + relativeUrl.substring(1, relativeUrl.length)
 }
 
-async function handleSaveNewDiscussion(newDiscussion, webId, privateTypeIndexUrl, dispatch) {
+async function handleSaveNewDiscussion(newDiscussion, webId, privateTypeIndexUrl, dispatch, getStore) {
 
     dispatch({ type: 'NEW_DISCUSSION_SAVING', payload: null })
     
@@ -37,7 +37,6 @@ async function handleSaveNewDiscussion(newDiscussion, webId, privateTypeIndexUrl
             
             if (typeof aclRelativeUrl !== 'undefined') {
                 dispatch({ type: 'NEW_DISCUSSION_SAVE_SUCCESS', payload: `The discussion has been created at ${indexUrl}` })
-
             }
 
             if (newDiscussion.addToPrivateTypeIndex) {
@@ -51,15 +50,14 @@ async function handleSaveNewDiscussion(newDiscussion, webId, privateTypeIndexUrl
             }
 
             // Then load the discussion
-            handleLoadDiscussion(indexUrl, dispatch, webId)
+            handleOpenDiscussion(indexUrl, dispatch, getStore)
             handleSelectDiscussion(indexUrl, dispatch)
         }
     }
 }
 
-async function handleSaveAddParticipant(webId, discussionUri, dispatch) {
-    console.log('webId',webId)
-    console.log('discussionUri',discussionUri)
+async function handleSaveAddParticipant(webId, discussionUri, dispatch, getStore) {
+
     dispatch({ type: 'ADD_PARTICIPANT_SAVING', payload: null })
 
     // Check webId
@@ -85,7 +83,7 @@ async function handleSaveAddParticipant(webId, discussionUri, dispatch) {
             
             if (authorizationAdded === true) {
                 dispatch({ type: 'ADD_PARTICIPANT_SUCCESS', payload: null })
-                api.loadDiscussion(discussionUri, dispatch, webId)
+                handleOpenDiscussion(discussionUri, dispatch, getStore)
             }
         }
     }
@@ -95,19 +93,68 @@ function handleSelectDiscussion(indexUrl, dispatch) {
     dispatch({ type: 'SELECT_DISCUSSION', payload: indexUrl })    
 }
 
-async function handleLoadDiscussion(indexUrl, dispatch, userWebId) {
-    dispatch({ type: 'DISCUSSION_FETCHING', payload: null })
-    const discussionFileContent = await api.loadDiscussion(indexUrl, dispatch, userWebId).then(
-        data => dispatch({ type: 'DISCUSSION_FETCH_SUCCESS', payload: null }),
-        error => dispatch({ type: 'DISCUSSION_FETCH_ERROR', payload: error.message })          
-    )
+async function handleOpenDiscussion(indexUri, dispatch, getStore) {
 
-    if (typeof discussionFileContent !== "undefined") {
-        await api.loadDiscussionPermissions(indexUrl, dispatch)
-    }
+    dispatch({ type: 'DISCUSSION_FETCHING', payload: null })
+    
+    // @TODO : ACL URI should be determined by HTTP Link header          
+    const aclUri = indexUri + '.acl'    
+    
+    // Dispatch discussion, participants and messages
+    try {
+        // Load index file of the discussion
+        const response = await api.loadDiscussion(indexUri)
+        dispatch({ type: 'DISCUSSION_FETCH_SUCCESS', payload: null })
+        
+        // Parse discussion from the response and dispatch participants and messages
+        const { messages, suscribers, info } = await api.parseDiscussion(indexUri)
+        suscribers.forEach(suscriber => {
+            dispatch({ type: 'PARTICIPANT_PARSED', payload: suscriber })
+            api.loadAndParseProfile(suscriber.personId).then(
+                (parsed) => dispatch({ type: 'PERSON_PARSED', payload: parsed }), 
+                (error) => Promise.reject()/* @TODO : Handle errors fetching progile */
+            )            
+        })
+        messages.forEach(message => dispatch({ type: 'MESSAGE_PARSED', payload: message }))
+        
+        // Extract and dispatch public authorizations from the response
+        const wacAllowHeader = response.headers.get('WAC-Allow')
+        const publicAuth = api.parsePublicLinkHeaderAcl(wacAllowHeader)
+        dispatch({ type: 'DISCUSSION_PARSED', payload: { ...info, public: publicAuth } })
+        
+        // Extract and dispatch user's authorizations from the response 
+        // to update his authorizations for the discussion
+        const userWebId = getStore()['user']['id'] 
+        if (userWebId !== null) {
+            const userAuth = api.parseUserLinkHeaderAcl(wacAllowHeader)
+            dispatch({ type: 'PARTICIPANT_PARSED', payload: { 
+                id: info.id + ':' + userWebId,
+                personId: userWebId,
+                discussionId: info.id,
+            }})
+        }
+        
+        // Load acl file
+        const aclRdf = await api.loadDiscussionAcl(aclUri)
+        
+        // Extract and dispatch participants from acl to update 
+        // or add authorizations for the discussion
+        const authorizations = await api.parseDiscussionAclAuthorizations(indexUri) 
+        authorizations.forEach(participant => dispatch({ 
+            type: 'PARTICIPANT_PARSED', 
+            payload: {
+                id: info.id + ':' + participant.webId,
+                personId: participant.webId,
+                discussionId: indexUri,
+            }
+        }))
+        
+    } catch (error) {
+        dispatch({ type: 'DISCUSSION_FETCH_ERROR', payload: error.message })
+    }    
 }
 
-export const openDiscussion = indexUrl => (dispatch, getStore) => handleLoadDiscussion(indexUrl, dispatch, getStore()['user']['id'])
+export const openDiscussion = indexUrl => (dispatch, getStore) => handleOpenDiscussion(indexUrl, dispatch, getStore)
 
 export const selectDiscussion = indexUrl => (dispatch) => handleSelectDiscussion(indexUrl, dispatch)
 
@@ -147,7 +194,7 @@ export const saveNewDiscussion = () => (dispatch, getStore) => {
     const discussionForm = store.discussionForm
     const privateTypeIndexUrl = store.user.privateTypeIndexUrl
     if (discussionForm.isValid) 
-        handleSaveNewDiscussion(discussionForm, webId, privateTypeIndexUrl, dispatch)      
+        handleSaveNewDiscussion(discussionForm, webId, privateTypeIndexUrl, dispatch, getStore)      
 }
 
 export const addParticipant = () => dispatch => {
@@ -158,11 +205,11 @@ export const addParticipantCancel = () => dispatch => {
     dispatch({ type: 'ADD_PARTICIPANT_CANCEL', payload: null })    
 }
 
-export const saveAddParticipant = (webId, discussionUri) => (dispatch) => {
+export const saveAddParticipant = (webId, discussionUri) => (dispatch, getStore) => {
     // dispatch({ type: 'ADD_PARTICIPANT_VALIDATE', payload: null })
     // const store = getStore()
     // if (store.participantForm.isValid) 
-        handleSaveAddParticipant(webId, discussionUri, dispatch)
+        handleSaveAddParticipant(webId, discussionUri, dispatch, getStore)
 }
 
 

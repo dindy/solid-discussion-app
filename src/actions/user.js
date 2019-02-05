@@ -1,5 +1,5 @@
 import config from '../config.js'
-import { loadProfile } from './api.js'
+import { loadAndParseProfile } from '../api/api.js'
 
 const auth = window.solid.auth
 
@@ -24,9 +24,12 @@ export const login = () => dispatch => {
             dispatch({ type: 'AUTHENTICATION_SUCCESS', payload: session })
             dispatch({ type: 'REQUEST_USER_PROFILE_LAUNCH', payload: null })     
             // Request the profile
-            loadProfile(session.webId, dispatch).then(
-                (parsed) => dispatch({ type: 'REQUEST_USER_PROFILE_SUCCESS', payload: parsed }), 
-                (error) => dispatch({ type: 'REQUEST_USER_PROFILE_ERROR', payload: error })
+            loadAndParseProfile(session.webId).then(
+                (parsed) => {
+                    dispatch({ type: 'REQUEST_USER_PROFILE_SUCCESS', payload: parsed })
+                    dispatch({ type: 'PERSON_PARSED', payload: parsed })
+                }, 
+                (error) => dispatch({ type: 'REQUEST_USER_PROFILE_ERROR', payload: error.message })
             )
         },
         error => dispatch({ type: 'AUTHENTICATION_ERROR', payload: error })

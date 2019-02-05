@@ -25,6 +25,8 @@ const newDiscussionAddToPrivateTypeIndexUpdate = (state, action) => ({ ...state,
 
 const newDiscussionPathUpdate = (state, action) => ({ ...state, 
     path: action.payload
+        // Fix url returned by solid server @TODO : Is it a bug ?
+        .replace(/(https?:\/\/)|(\/)+/g, "$1$2") 
 })
 
 const newDiscussionNameUpdate = (state, action) => ({ ...state, 

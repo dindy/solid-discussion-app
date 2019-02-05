@@ -120,7 +120,7 @@ export async function addParticipantAuthorizationsToDiscussion(webId, discussion
     })  
 }
 
-const parseProfile = (webId, dispatch) => {
+const parseProfile = (webId) => {
     const $webId = store.sym(webId)
 
     const $name = store.any($webId, $VCARD('fn')) 
@@ -134,23 +134,26 @@ const parseProfile = (webId, dispatch) => {
     
     const $storages = store.each($webId, $PIM('storage')) || []
     
-    const profile = {
+    return {
         id: $webId.value,
         name: $name ? $name.value : null,    
         avatarUrl: $avatarUrl ? $avatarUrl.value : null,    
         privateTypeIndexUrl: $privateTypeIndexUrl ? $privateTypeIndexUrl.value : null,    
         storages: $storages.map($storage => $storage.value),
     }
-
-    dispatch({ type: 'PERSON_PARSED', payload: profile })
-    
-    return profile
 }
 
-export async function loadProfile(webId, dispatch) {
+export async function loadProfile(webId) {
     return fetcher.load(webId).then( 
-        response => parseProfile(webId, dispatch),
-        error => Promise.reject(error.message)
+        response => Promise.resolve(response),
+        error => Promise.reject(error)
+    )
+}
+
+export async function loadAndParseProfile(webId) {
+    return loadProfile(webId).then(
+        response => parseProfile(webId),
+        error => Promise.reject(error)
     )
 }
 
@@ -165,148 +168,119 @@ const extractAuthorizationsFromParsedLinkHeader = (authorizationString) => ({
     control: authorizationString.indexOf('control') !== -1,
 })
 
-const parsePublicLinkHeaderAcl = (str, discussionId, dispatch) => {
+export const parsePublicLinkHeaderAcl = (linkHeaderStr) => {
     const publicRegex = /public="((?:[a-z]|\s)+)"/
-    const publicAutorizations = str.match(publicRegex)
-    if (!!publicAutorizations) dispatch({
-        type: 'PARTICIPANT_PARSED',
-        payload: {
-            id: discussionId,
-            function: 'parsePublicLinkHeaderAcl',
-            personId: null,
-            discussionId: discussionId,
-            ...extractAuthorizationsFromParsedLinkHeader(publicAutorizations[1]),
-        }
-    })
+    const publicAutorizations = linkHeaderStr.match(publicRegex)
+    
+    return publicAutorizations === null ?
+        { ...extractAuthorizationsFromParsedLinkHeader('') }
+        : { ...extractAuthorizationsFromParsedLinkHeader(publicAutorizations[1]) }
 }
 
-const parseUserLinkHeaderAcl = (str, userWebId, discussionId, dispatch) => {
+export const parseUserLinkHeaderAcl = (linkHeaderStr) => {
     const userRegex = /user="((?:[a-z]|\s)+)"/
-    const userAutorizations = str.match(userRegex)
-    if (!!userAutorizations) dispatch({
-        type: 'PARTICIPANT_PARSED',
-        payload: {
-            function: 'parseUserLinkHeaderAcl',
-            id: discussionId + ':' + userWebId,
-            personId: userWebId,
-            discussionId: discussionId,
-            ...extractAuthorizationsFromParsedLinkHeader(userAutorizations[1]),
-        }
-    })
+    const userAutorizations = linkHeaderStr.match(userRegex)
+    
+    return userAutorizations === null ? 
+        { ...extractAuthorizationsFromParsedLinkHeader('') }
+        : { ...extractAuthorizationsFromParsedLinkHeader(userAutorizations[1]) }
 }
 
-const parseLinkHeaderAcl = (str, userWebId, discussionId, dispatch) => {
-    parseUserLinkHeaderAcl(str, userWebId, discussionId, dispatch)
-    parsePublicLinkHeaderAcl(str, discussionId, dispatch)
-}
-
-const parseDiscussion = (indexFileUri, response, dispatch, userWebId) => {
+const isAThread = indexFileUri => {
     const $indexFileUri = store.sym(indexFileUri)
     const $discussionTypes = store.each($indexFileUri, $RDF('type'), undefined)
-    const isAThread = $discussionTypes.filter($type => $type.value === $SIOC('Thread').value).length > 0
-    const wacAllowHeader = response.headers.get('WAC-Allow')
-    if (isAThread) {
-        
-        // title
-        const $title = store.any($indexFileUri, $PURL('title'), undefined)
-        const discussion = {
-            id: indexFileUri,
-            title: $title ? $title.value : null,
-        }
-        dispatch({ type: 'DISCUSSION_PARSED', payload: discussion })
-        
-        // messages
-        const $messages = store.each($indexFileUri, $SIOC('container_of'), undefined)
-        $messages.forEach($message => {
-            const $messageUri = store.sym($message.value)
-            const $content = store.any($messageUri, $SIOC('content'), undefined)
-            const $account = store.any($messageUri, $SIOC('has_creator'), undefined)
-            const $person = store.any($account, $SIOC('account_of'), undefined)
-            const $created = store.any($messageUri, $PURLE('created'), undefined)
-            if (!!$content && !!$person && !!$created)
-                dispatch({ type: 'MESSAGE_PARSED', payload: {
-                   id: $messageUri.value, 
-                   creatorId: $person.value,
-                   content: $content.value,
-                   discussionId: indexFileUri, 
-                   created: new Date($created.value)
-                }})
-        })
-
-        // participants
-        const $suscribersAccounts = store.each($indexFileUri, $SIOC('has_subscriber'), undefined)
-        const $participantsWebIds = $suscribersAccounts.map(($suscriberAccount) => {
-            return store.any($suscriberAccount, $SIOC('account_of'), undefined)
-        })
-        
-        $participantsWebIds.forEach($webId => {
-            loadProfile($webId.value, dispatch)
-            dispatch({ type: 'PARTICIPANT_PARSED', payload: {
-                function: 'parseDiscussion',
-                id: indexFileUri + ':' + $webId.value,
-                personId: $webId.value,
-                discussionId: indexFileUri,
-                read: true,
-                write: true,
-                append: true,
-            }})
-        })
-        parseLinkHeaderAcl(wacAllowHeader, userWebId, indexFileUri, dispatch)
-    } else {
-        dispatch({ 
-            type: 'DISCUSSION_PARSE_ERROR', 
-            payload: `We couldn't find a discussion in ${indexFileUri}.` 
-        })
-    }    
+    
+    return $discussionTypes.filter($type => $type.value === $SIOC('Thread').value).length > 0    
 }
 
-export async function loadDiscussion(uri, dispatch, userWebId) {
-    return fetcher.load(uri).then( 
-        response => parseDiscussion(uri, response, dispatch, userWebId),
-        error => Promise.reject(error.message)
+const parseDiscussionInfo = (indexFileUri) => {
+    const $indexFileUri = store.sym(indexFileUri)
+    const $title = store.any($indexFileUri, $PURL('title'), undefined)
+    
+    return {
+        id: indexFileUri,
+        title: $title ? $title.value : null,
+    }
+}
+
+const parseDiscussionSuscribers = (indexFileUri) => {
+    const $indexFileUri = store.sym(indexFileUri)
+    const $suscribersAccounts = store.each($indexFileUri, $SIOC('has_subscriber'), undefined)
+    const $participantsWebIds = $suscribersAccounts.map(($suscriberAccount) => {
+        return store.any($suscriberAccount, $SIOC('account_of'), undefined)
+    })
+    
+    return $participantsWebIds.map($webId => ({
+        id: indexFileUri + ':' + $webId.value,
+        personId: $webId.value,
+        discussionId: indexFileUri,
+        read: true,
+        write: true,
+        append: true,
+    }))
+}
+
+const parseDiscussionMessages = (indexFileUri) => {
+    const $indexFileUri = store.sym(indexFileUri)
+    const $messages = store.each($indexFileUri, $SIOC('container_of'), undefined)
+    
+    return $messages.reduce((messages, $message) => {
+        const $messageUri = store.sym($message.value)
+        const $content = store.any($messageUri, $SIOC('content'), undefined)
+        const $account = store.any($messageUri, $SIOC('has_creator'), undefined)
+        const $person = store.any($account, $SIOC('account_of'), undefined)
+        const $created = store.any($messageUri, $PURLE('created'), undefined)
+        
+        return (!!$content && !!$person && !!$created) ?
+            messages.concat({
+                id: $messageUri.value, 
+                creatorId: $person.value,
+                content: $content.value,
+                discussionId: indexFileUri, 
+                created: new Date($created.value)
+            }) : messages
+
+    }, [])
+}
+
+export const parseDiscussion = (indexFileUri) => isAThread(indexFileUri) ? ({
+    info: parseDiscussionInfo(indexFileUri),
+    suscribers: parseDiscussionSuscribers(indexFileUri),
+    messages: parseDiscussionMessages(indexFileUri),
+}) : null
+
+export async function loadDiscussion(uri, force = true) {
+    return fetcher.load(uri, { force }).then( 
+        response => Promise.resolve(response),
+        error => Promise.reject(error)
     )
 }
 
-const parseDiscussionPermissions = (indexUri, aclUri, response, dispatch) => {
-    dispatch({ 
-        type: 'USER_ADD_DISCUSSION_OWNERSHIP', 
-        payload: indexUri 
-    })
+export async function parseDiscussionAclAuthorizations (indexUri) {
+
     const $indexFile = store.sym(indexUri)
-    const $aclFile = store.sym(aclUri)
-    const persons = store
-        .each(undefined, $ACL('accessTo'), $indexFile) // Authorizations for the discussion
-        .map($authorization => { // Persons with rights 
-            store
-                .each($authorization, $ACL('agent'))
-                .map($agent => {
-                    dispatch({ type: 'PARTICIPANT_PARSED', payload: {
-                        function: 'parseDiscussionPermissions',
-                        id: indexUri + ':' + $agent.value,
-                        personId: $agent.value,
-                        discussionId: indexUri,
-                        ...store
-                            .each($authorization, $ACL('mode'))
-                            .reduce((props, $mode) => {
-                                const mode = $mode.value.split('#')[1].toLowerCase()
-                                return ({
-                                    ...props,
-                                    [mode]: true
-                                })
-                            }, {})
-                    }})
-                    loadProfile($agent.value, dispatch)
-                })
-        })
-        // .map(person => person.value)
-    console.log('persons',persons) 
+    const $authorizations = store.each(undefined, $ACL('accessTo'), $indexFile)
+    const $agents = $authorizations.reduce((prevAgents, $authorization) => {
+        return prevAgents.concat(store
+            .each($authorization, $ACL('agent'))
+            .map($agent => ({ ...$agent, $authorization }) )
+        )
+    }, [])
+    
+    return $agents.map($agent => Object.assign({ webId: $agent.value }, 
+        { ...store
+            .each($agent.$authorization, $ACL('mode'))
+            .reduce((props, $mode) => {
+                const mode = $mode.value.split('#')[1].toLowerCase()
+                return ({ ...props, [mode]: true })
+            }, {})
+        }
+    ))
 }
 
-export async function loadDiscussionPermissions(indexUri, dispatch) {
-    // @TODO : ACL URI should be determined by HTTP Link header
-    const aclUri = indexUri + '.acl'
-    return fetcher.load(aclUri).then( 
-        response => parseDiscussionPermissions(indexUri, aclUri, response, dispatch),
-        error => Promise.reject(error.message)
+export async function loadDiscussionAcl(aclUri, force = true) {
+    return fetcher.load(aclUri, { force }).then( 
+        response => Promise.resolve(response),
+        error => Promise.reject(error)
     )
 }
