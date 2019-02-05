@@ -61,7 +61,7 @@ New solid tools are being created ([LDflex](https://github.com/solid/query-ldfle
 
 ### 📅 Status
 
-Doing
+Done
 
 _______________________
 
