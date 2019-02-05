@@ -71,7 +71,44 @@ _______________________
 
 Once a discussion is created the user can add participants by adding their webids. 
 
-### Implementation 
+### 🔧 Implementation 
+
+The new participant is added as `sioc:User` in the source file of the discussion. For example :
+```turtle
+@prefix : <#>.
+@prefix sioc: <http://rdfs.org/sioc/ns#>.
+@prefix terms: <http://purl.org/dc/terms/>.
+@prefix c: <https://www.w3.org/People/Berners-Lee/card#>.
+@prefix c0: </profile/card#>.
+
+<>
+    a sioc:Thread;
+    terms:title "Yo";
+    sioc:has_subscriber :account1, [ a sioc:User; sioc:account_of c:i ].
+:account1 a sioc:User; sioc:account_of c0:me.
+```
+
+The new participant is also added to the acl file. For example :
+```turtle
+@prefix : <#>.
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+@prefix c: </profile/card#>.
+@prefix c0: <https://www.w3.org/People/Berners-Lee/card#>.
+
+:owner
+    a acl:Authorization;
+    acl:accessTo <index.ttl>;
+    acl:agent c:me;
+    acl:mode acl:Control, acl:Read, acl:Write.
+[
+    a acl:Authorization;
+    acl:accessTo <index.ttl>;
+    acl:agent c0:i;
+    acl:mode acl:Read, acl:Write
+].
+```
+
+The new participant is now authorized to load the discussion and see other participants. 
 
 ### 📅 Status
 
@@ -85,7 +122,7 @@ _______________________
 
 A user can load a discussion by hitting a url. The app must display discussion name, messages and participants.
 
-### Implementation 
+### 🔧 Implementation 
 
 ### 📅 Status
 
@@ -99,7 +136,7 @@ _______________________
 
 A user can post messages.
 
-### Implementation 
+### 🔧 Implementation 
 
 ### 📅 Status
 
@@ -114,7 +151,7 @@ _______________________
 Once a discussion is created the user can invite other people to participate by sending them an invitation with an appropriate link. 
 The user can only add members to a discussion he owns.
 
-### Implementation 
+### 🔧 Implementation 
 
 ### 📅 Status
 
