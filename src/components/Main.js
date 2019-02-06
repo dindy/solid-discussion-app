@@ -81,6 +81,7 @@ class Main extends Component {
                 discussionsState={this.props.discussionsState}
                 messagesState={this.props.messagesState}
                 personsState={this.props.personsState}
+                userState={this.props.userState}
             />
         ) : null
     }

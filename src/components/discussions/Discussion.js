@@ -3,19 +3,17 @@ import classNames from 'classnames'
 import { withStyles } from '@material-ui/core/styles'
 import styles from './Discussion.styles'
 import Card from '@material-ui/core/Card'
-import Avatar from '@material-ui/core/Avatar'
-import ListItemText from '@material-ui/core/ListItemText'
 import List from '@material-ui/core/List'
 import CardContent from '@material-ui/core/CardContent'
-import { ListItem } from '@material-ui/core';
+import Message from './Message'
 
 class Discussion extends Component {
 
     renderMessagesListItems() {
         const discussionId = this.props.discussionsState.selected
         const persons = this.props.personsState.byId
-        const classes = this.props.classes
-        
+        const user = this.props.userState
+
         return this.props.messagesState.allIds
             .map(messageId => this.props.messagesState.byId[messageId])
             .filter(message => message.discussionId == discussionId)
@@ -27,27 +25,14 @@ class Discussion extends Component {
                 const avatarUrl = typeof persons[message.creatorId] !== 'undefined' ? 
                     persons[message.creatorId].avatarUrl : null
                 
-                return (
-                    <ListItem 
-                        key={message.id}
-                        className={classes.listItem}
-                        >
-                        <Avatar                        
-                            alt={name}
-                            src={avatarUrl}
-                            className={classes.avatar}
-                            />
-                        <ListItemText 
-                            className={classes.messageItemText}
-                            primary={message.content} 
-                            secondary={
-                                <span className={classes.messageMeta}>
-                                    {name + ', ' + message.created.toISOString()}
-                                </span>
-                            } 
-                            />
-                    </ListItem>
-                )
+                const fullMessage = Object.assign({}, message, { user: { name, avatarUrl } })
+                    
+                const alignRight = user.id === message.creatorId
+
+                return <Message 
+                    key={message.id}
+                    message={fullMessage} 
+                    alignRight={alignRight}/>
             })
     }
 
