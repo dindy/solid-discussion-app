@@ -150,7 +150,7 @@ async function handleOpenDiscussion(indexUri, dispatch, getStore) {
         }))
         
     } catch (error) {
-        dispatch({ type: 'DISCUSSION_FETCH_ERROR', payload: error.message })
+        dispatch({ type: 'DISCUSSION_FETCH_ERROR', payload: `We couldn't read the conversation : ${indexUri} : ${error.message}` })
     }    
 }
 
