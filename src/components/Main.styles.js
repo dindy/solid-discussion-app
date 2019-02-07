@@ -1,7 +1,9 @@
 import { drawerWidth } from '../styles/variables'
+import { relative } from 'upath';
 
 const styles = theme => ({
     content: {
+        position: 'relative',
         paddingTop: 72, // menu height(64px) + 8px
         flexGrow: 1,
         backgroundColor: theme.palette.background.default,

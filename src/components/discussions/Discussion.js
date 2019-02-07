@@ -6,24 +6,27 @@ import Card from '@material-ui/core/Card'
 import List from '@material-ui/core/List'
 import CardContent from '@material-ui/core/CardContent'
 import Message from './Message'
+import InputBase from '@material-ui/core/InputBase';
+import { Button } from '@material-ui/core';
 
 class Discussion extends Component {
 
-    renderMessagesListItems() {
+    renderMessagesList() {
         const discussionId = this.props.discussionsState.selected
-        const persons = this.props.personsState.byId
+        const personsIds = this.props.personsState.byId
         const user = this.props.userState
-
-        return this.props.messagesState.allIds
-            .map(messageId => this.props.messagesState.byId[messageId])
+        const messagesEntities = this.props.messagesState
+        
+        const Messages = messagesEntities.allIds
+            .map(messageId => messagesEntities.byId[messageId])
             .filter(message => message.discussionId == discussionId)
             .sort((a, b) => b.created - a.created)
             .map(message => {
-                const name = typeof persons[message.creatorId] !== 'undefined' ? 
-                    persons[message.creatorId].name : 'Unknown' 
+                const name = typeof personsIds[message.creatorId] !== 'undefined' ? 
+                    personsIds[message.creatorId].name : 'Unknown' 
                 
-                const avatarUrl = typeof persons[message.creatorId] !== 'undefined' ? 
-                    persons[message.creatorId].avatarUrl : null
+                const avatarUrl = typeof personsIds[message.creatorId] !== 'undefined' ? 
+                    personsIds[message.creatorId].avatarUrl : null
                 
                 const fullMessage = Object.assign({}, message, { user: { name, avatarUrl } })
                     
@@ -34,6 +37,20 @@ class Discussion extends Component {
                     message={fullMessage} 
                     alignRight={alignRight}/>
             })
+        
+            return <List>{Messages}</List>
+    }
+
+    renderNewMessageForm() {
+        return (
+            <div className={this.props.classes.newMessageForm}>
+                <InputBase className={this.props.classes.input}
+                    multiline={true} 
+                    fullWidth={true} 
+                    rows={2}/>
+                <Button>Ok</Button>
+            </div>
+        )
     }
 
     render() {
@@ -42,10 +59,9 @@ class Discussion extends Component {
         return (
             <Card className={classes.card}> 
                 <CardContent className={classes.cardContent}>
-                    <List>
-                        { this.renderMessagesListItems() }
-                    </List>
+                    { this.renderMessagesList() }
                 </CardContent>                
+                { this.renderNewMessageForm() }
             </Card>
         )
     }

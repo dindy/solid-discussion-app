@@ -8,21 +8,17 @@ const styles = theme => ({
     },
     cardContent: {
     },
-    listItem: {
-        alignItems: 'start',
-    },
-    avatar: {
-        margin: 10,
-    },
-    avatarName: {
-        margin: 10,
-    },    
-    messageMeta: {
-
-    },
-    messageItemText: {
+    newMessageForm: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        width: '100%', 
+        backgroundColor: '#fff',
         display: 'flex',
-        flexDirection: 'column-reverse',
+        borderTop: `1px solid ${theme.palette.grey['300']}`,
+    },
+    input: {
+        backgroundColor: '#fff',
     }
 })
 
