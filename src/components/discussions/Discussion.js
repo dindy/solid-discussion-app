@@ -12,17 +12,17 @@ import ScrollToBottom from 'react-scroll-to-bottom'
 
 class Discussion extends Component {
 
-    renderMessagesList() {
+    renderMessages() {
         const discussionId = this.props.discussionsState.selected
         const personsById = this.props.personsState.byId
         const user = this.props.userState
         const classes = this.props.classes
         const messagesEntities = this.props.messagesState
         
-        const mapIdToMessage = (messagesById, messageId) => messagesById[messageId]
-        const filterMessageByDiscussion = (message, discussionId) => message.discussionId == discussionId
+        const getMessageFromId = (messagesById, messageId) => messagesById[messageId]
+        const filterMessageByDiscussion = (message, discussionId) => message.discussionId === discussionId
         const sortMessageByDateDesc = (a,b) => a.created - b.created
-        const mapMessageToComponent = (message, personsById, user) => {
+        const completeMessageData = (message, personsById, user) => {
             const hasPerson = typeof personsById[message.creatorId] !== 'undefined'
             let name = 'Unknown'
             let avatarUrl = null
@@ -30,43 +30,75 @@ class Discussion extends Component {
                 name = personsById[message.creatorId].name
                 avatarUrl = personsById[message.creatorId].avatarUrl
             }
-            const fullMessage = Object.assign({}, message, { 
-                user: { name, avatarUrl } 
+            return Object.assign({}, message, { 
+                user: { name, avatarUrl },
+                alignRight: user.id === message.creatorId
             })
-            const alignRight = user.id === message.creatorId            
+        }
+        const groupMessage = (groups, message, index, messages) => {
+            
+            if (index === 0) return groups.concat({id: index, messages: [{...message, displayMeta: true}]})
 
-            return (
-                <Card className={classes.card}> 
+            const lastMessage = messages[index - 1]
+            const isFromSamePerson = lastMessage.creatorId === message.creatorId
+            const milliSecTreshold = 1000 * 60 * 5
+            console.log(lastMessage.created.getTime() - message.created.getTime())
+            const isCloseInTime = message.created.getTime() - lastMessage.created.getTime() < milliSecTreshold 
+           
+            if (!isFromSamePerson || !isCloseInTime)
+                return groups.concat({id: index, messages: [{...message, displayMeta: true}]})
+            
+            const lastGroupIndex = groups.length - 1
+
+            return groups.map((group, groupIndex) => {
+                return (lastGroupIndex !== groupIndex) ? group : 
+                    {...group, messages: 
+                        [...group.messages, {...message, displayMeta: false}]
+                    }
+                }
+            )
+        }
+
+        const renderMessageComponent = (message) => (
+            <Message 
+                key={message.id}
+                message={message} 
+                alignRight={message.alignRight}
+                displayMeta={message.displayMeta}/>                                
+        )
+
+        const renderGroupComponent = (group, classes) => (
+                <Card key={group.id} className={classes.card}> 
                     <CardContent className={classes.cardContent}>
                         <List>
-                            <Message 
-                                key={message.id}
-                                message={fullMessage} 
-                                alignRight={alignRight}/>                                
+                            {group.messages.map(messages => renderMessageComponent(messages))}
                         </List>
                     </CardContent>                
                 </Card>                
             )              
-        }
 
-        const Messages = messagesEntities.allIds
-            .map(messageId => mapIdToMessage(messagesEntities.byId, messageId))
+        const renderGroups = messagesEntities.allIds
+            .map(messageId => getMessageFromId(messagesEntities.byId, messageId))
             .filter(message => filterMessageByDiscussion(message, discussionId))
             .sort((a, b) => sortMessageByDateDesc(a, b))
-            .map(message => mapMessageToComponent(message, personsById, user))
+            .map(message => completeMessageData(message, personsById, user))
+            .reduce((groups, message, index, messages) => groupMessage(groups, message, index, messages), [])
+            .map(group => renderGroupComponent(group, classes))
         
-        return <ScrollToBottom className={classes.messages}
+        return <ScrollToBottom 
+                    className={classes.messages}
                     followButtonClassName={classes.scrollDownButton}
-                    >{Messages}</ScrollToBottom>
+                    >{renderGroups}
+                </ScrollToBottom>
 
     }
 
     renderNewMessageForm() {
-        const { setMessage, postMessage, messageFormState } = this.props
+        const { setMessage, postMessage, messageFormState, classes } = this.props
         
         return (
-            <div className={this.props.classes.newMessageForm}>
-                <InputBase className={this.props.classes.input}
+            <div className={classes.newMessageForm}>
+                <InputBase className={classes.input}
                     multiline={true} 
                     fullWidth={true} 
                     value={ messageFormState.content || '' }
@@ -81,7 +113,7 @@ class Discussion extends Component {
 
         return (
             <div className={classes.discussion}>
-                { this.renderMessagesList() }
+                { this.renderMessages() }
                 { this.renderNewMessageForm() }
             </div>
         )
