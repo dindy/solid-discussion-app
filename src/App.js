@@ -85,6 +85,9 @@ class App extends Component {
                     saveAddParticipant={this.props.saveAddParticipant} 
                     participantFormState={this.props.participantFormState} 
                     addParticipantWebIdUpdate={this.props.addParticipantWebIdUpdate} 
+                    postMessage={this.props.postMessage} 
+                    setMessage={this.props.setMessage} 
+                    messageFormState={this.props.messageFormState} 
                     />
                 <DiscussionDrawer 
                     addParticipant={this.props.addParticipant} 
@@ -139,6 +142,8 @@ const mapDispatchToProps = dispatch => ({
     addParticipantCancel: () => dispatch(discussionsActions.addParticipantCancel()),
     saveAddParticipant: (discussionId, webId) => dispatch(discussionsActions.saveAddParticipant(discussionId, webId)),
     addParticipantWebIdUpdate: (webId) => dispatch(discussionsActions.addParticipantWebIdUpdate(webId)),
+    postMessage: () => dispatch(discussionsActions.postMessage()),
+    setMessage: (content) => dispatch(discussionsActions.setMessage(content)),
 })
 
 const mapStateToProps = state => ({
@@ -154,6 +159,7 @@ const mapStateToProps = state => ({
     personsState: state.entities.persons,
     participantsState: state.entities.participants,
     messagesState: state.entities.messages,
+    messageFormState: state.messageForm,
 })
 
 App.propTypes = {

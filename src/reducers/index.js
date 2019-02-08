@@ -6,6 +6,7 @@ import explorer from './explorer'
 import entities from './entities'
 import discussions from './discussions'
 import participantForm from './participantForm'
+import messageForm from './messageForm'
 
 export default combineReducers({
 	layout,
@@ -15,4 +16,5 @@ export default combineReducers({
 	explorer,
     discussionForm,
     participantForm,
+    messageForm,
 })

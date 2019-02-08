@@ -216,3 +216,21 @@ export const saveAddParticipant = (webId, discussionUri) => (dispatch, getStore)
 export const addParticipantWebIdUpdate = webId => dispatch => {
     dispatch({ type: 'ADD_PARTICIPANT_WEBID_UPDATE', payload: webId })    
 }
+
+export const postMessage = () => (dispatch, getStore) => {
+    const webId = getStore()['user']['id']
+    const message = getStore()['messageForm']['content']
+    const discussionUri = getStore()['discussions']['selected']
+    dispatch({ type: 'POST_MESSAGE_UPDATING', payload: null })    
+    api.addMessageToDiscussion(message, discussionUri, webId).then(
+        messageUri => {
+            dispatch({ type: 'POST_MESSAGE_UPDATED', payload: messageUri })
+            handleOpenDiscussion(discussionUri, dispatch, getStore)
+        },
+        error => dispatch({ type: 'POST_MESSAGE_ERROR', payload: error.message }),
+    )
+}
+
+export const setMessage = content => dispatch => {
+    dispatch({ type: 'SET_MESSAGE', payload: content })
+}

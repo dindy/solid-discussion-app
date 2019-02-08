@@ -1,15 +1,25 @@
 const styles = theme => ({
+    discussion: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
+    messages: {
+        height: '50%',
+        // overflowY: 'scroll',
+        flexGrow: 2,
+    },
     card: {
         margin: 'auto',
         maxWidth: 600,
         [theme.breakpoints.up('sm')]: {
-            marginTop: theme.spacing.unit * 3
+            marginTop: theme.spacing.unit,
+            marginBottom: theme.spacing.unit
         }
     },
     cardContent: {
     },
     newMessageForm: {
-        position: 'absolute',
         bottom: 0,
         left: 0,
         width: '100%', 
@@ -19,7 +29,10 @@ const styles = theme => ({
     },
     input: {
         backgroundColor: '#fff',
-    }
+    },
+    scrollDownButton: {
+        display: 'none'
+    }    
 })
 
 export default styles

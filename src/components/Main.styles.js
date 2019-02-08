@@ -1,13 +1,13 @@
 import { drawerWidth } from '../styles/variables'
-import { relative } from 'upath';
 
 const styles = theme => ({
-    content: {
+    content: {    
+        maxHeight: 'calc( 100vh - 64px )',
         position: 'relative',
-        paddingTop: 72, // menu height(64px) + 8px
+        paddingTop: 64, // menu height
         flexGrow: 1,
         backgroundColor: theme.palette.background.default,
-        padding: theme.spacing.unit,
+        // padding: theme.spacing.unit,
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,

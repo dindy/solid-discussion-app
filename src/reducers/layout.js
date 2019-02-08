@@ -176,6 +176,10 @@ const discussionFetchError = (state, action) => ({ ...state,
     snackbar: handleAddSnackbarMessage(state.snackbar, action.payload)         
 })
 
+const postMessageError = (state, action) => ({ ...state, 
+    snackbar: handleAddSnackbarMessage(state.snackbar, action.payload)         
+})
+
 /******************/
 /* Reducer switch */
 /******************/
@@ -203,6 +207,7 @@ const discussions = utils.createReducer(initialState, {
     'DESELECT_DISCUSSION' : deselectDiscussion,
     'ADD_PARTICIPANT_SUCCESS' : addParticipantClose,
     'DISCUSSION_FETCH_ERROR' : discussionFetchError,
+    'POST_MESSAGE_ERROR' : postMessageError
 });
 
 export default discussions        

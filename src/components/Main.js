@@ -82,6 +82,9 @@ class Main extends Component {
                 messagesState={this.props.messagesState}
                 personsState={this.props.personsState}
                 userState={this.props.userState}
+                postMessage={this.props.postMessage} 
+                setMessage={this.props.setMessage} 
+                messageFormState={this.props.messageFormState} 
             />
         ) : null
     }

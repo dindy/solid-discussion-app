@@ -67,6 +67,15 @@ export async function createDiscussionIndex(newDiscussion, webId, parentUri) {
     })
 }
 
+const update = (del, ins) => {
+    return new Promise(function (resolve, reject) {
+        updater.update(del, ins, (uri, ok, message) => {
+            if (ok) return resolve(uri)
+            else reject(new Error(message))
+        })
+    })
+}
+
 export async function addDiscussionToPrivateRegistry(discussionIndexRelativeUri, privateTypeIndexUri) {
     const $bNode = store.bnode()
     const $privateTypeIndex = store.sym(privateTypeIndexUri)
@@ -79,17 +88,34 @@ export async function addDiscussionToPrivateRegistry(discussionIndexRelativeUri,
     updater.update([], ins, (uri, ok, message) => {
         if (ok) return uri
         else return new Error(message)
-    })       
+    })              
+}
+
+const generateNewNamedNode = (uri) => store.sym(`${uri}#${(new Date()).getTime()}`)
+
+export async function addMessageToDiscussion(content, discussionUri, webId) {
+    const $message = generateNewNamedNode(discussionUri) 
+    const $discussionIndex = store.sym(discussionUri)
+    const $account = store.any(undefined, $SIOC('account_of'), store.sym(webId))
+    const $content = $rdf.literal(content)
+    const ins = [
+        $rdf.st($discussionIndex, $SIOC('container_of'), $message, $discussionIndex),
+        $rdf.st($message, $RDF('type'), $SIOC('Post'), $discussionIndex),
+        $rdf.st($message, $SIOC('content'), $content, $discussionIndex),
+        $rdf.st($message, $SIOC('has_creator'), $account, $discussionIndex),
+        $rdf.st($message, $PURLE('created'), (new Date).toISOString(), $discussionIndex),
+    ]
+    return update([], ins).then(success => Promise.resolve($message.value))
 }
 
 export async function addParticipantToDiscussion(webId, discussionUri) {
-    const $bNode = store.bnode()
+    const $account = generateNewNamedNode(discussionUri)
+    const $user = store.sym(webId)
     const $discussionIndex = store.sym(discussionUri)
-    const $webId = store.sym(webId)
     const ins = [
-        $rdf.st($discussionIndex, $SIOC('has_subscriber'), $bNode, $discussionIndex),
-        $rdf.st($bNode, $RDF('type'), $SIOC('User'), $discussionIndex),
-        $rdf.st($bNode, $SIOC('account_of'), $webId, $discussionIndex),
+        $rdf.st($discussionIndex, $SIOC('has_subscriber'), $account, $discussionIndex),
+        $rdf.st($account, $RDF('type'), $SIOC('User'), $discussionIndex),
+        $rdf.st($account, $SIOC('account_of'), $user, $discussionIndex),
     ]
     updater.update([], ins, (uri, ok, message) => {
         if (ok) return uri
@@ -102,10 +128,10 @@ export async function addParticipantAuthorizationsToDiscussion(webId, discussion
     // @TODO : ACL URI should be determined by HTTP Link header
     const $discussionAcl = store.sym(discussionUri + '.acl')
     const $discussionIndex = store.sym(discussionUri)
-    const $webId = store.sym(webId)
+    const $user = store.sym(webId)
     let ins = [
         $rdf.st($bNode, $RDF('type'), $ACL('Authorization'), $discussionAcl),
-        $rdf.st($bNode, $ACL('agent'), $webId, $discussionAcl),
+        $rdf.st($bNode, $ACL('agent'), $user, $discussionAcl),
         $rdf.st($bNode, $ACL('accessTo'), $discussionIndex, $discussionAcl),
     ]
     authorizations.forEach(authorization => {
@@ -230,7 +256,6 @@ const parseDiscussionMessages = (indexFileUri) => {
         const $account = store.any($messageUri, $SIOC('has_creator'), undefined)
         const $person = store.any($account, $SIOC('account_of'), undefined)
         const $created = store.any($messageUri, $PURLE('created'), undefined)
-        
         return (!!$content && !!$person && !!$created) ?
             messages.concat({
                 id: $messageUri.value, 
