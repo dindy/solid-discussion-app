@@ -9,6 +9,9 @@ import Message from './Message'
 import InputBase from '@material-ui/core/InputBase';
 import { Button } from '@material-ui/core';
 import ScrollToBottom from 'react-scroll-to-bottom'
+import ListSubheader from '@material-ui/core/ListSubheader'
+import Avatar from '@material-ui/core/Avatar'
+import ListItemText from '@material-ui/core/ListItemText'
 
 class Discussion extends Component {
 
@@ -35,18 +38,28 @@ class Discussion extends Component {
                 alignRight: user.id === message.creatorId
             })
         }
+
         const groupMessage = (groups, message, index, messages) => {
             
-            if (index === 0) return groups.concat({id: index, messages: [{...message, displayMeta: true}]})
+            if (index === 0) return groups.concat({
+                id: index, 
+                messages: [{...message, displayMeta: true}],
+                user: {name: message.user.name, avatarUrl: message.user.avatarUrl},
+                created: message.created,
+            })
 
             const lastMessage = messages[index - 1]
             const isFromSamePerson = lastMessage.creatorId === message.creatorId
             const milliSecTreshold = 1000 * 60 * 5
-            console.log(lastMessage.created.getTime() - message.created.getTime())
             const isCloseInTime = message.created.getTime() - lastMessage.created.getTime() < milliSecTreshold 
            
             if (!isFromSamePerson || !isCloseInTime)
-                return groups.concat({id: index, messages: [{...message, displayMeta: true}]})
+                return groups.concat({
+                    id: index, 
+                    messages: [{...message, displayMeta: true}],
+                    user: {name: message.user.name, avatarUrl: message.user.avatarUrl},
+                    created: message.created,
+                })
             
             const lastGroupIndex = groups.length - 1
 
@@ -68,14 +81,24 @@ class Discussion extends Component {
         )
 
         const renderGroupComponent = (group, classes) => (
-                <Card key={group.id} className={classes.card}> 
-                    <CardContent className={classes.cardContent}>
-                        <List>
-                            {group.messages.map(messages => renderMessageComponent(messages))}
-                        </List>
-                    </CardContent>                
-                </Card>                
-            )              
+            <Card key={group.id} className={classes.card}> 
+                <CardContent className={classes.cardContent}>
+                    <List>
+                        <ListSubheader
+                            className={classes.listSubheader} 
+                            primary={group.user.name}>
+                            <Avatar alt={group.user.name}
+                                src={group.user.avatarUrl}
+                                className={classes.avatar}/>                                    
+                            <ListItemText className={classes.messageItemText}
+                                secondary={group.user.name + ', ' + group.created.toISOString()}
+                                />                                
+                        </ListSubheader>                         
+                        {group.messages.map(messages => renderMessageComponent(messages))}
+                    </List>
+                </CardContent>                
+            </Card>                
+        )              
 
         const renderGroups = messagesEntities.allIds
             .map(messageId => getMessageFromId(messagesEntities.byId, messageId))

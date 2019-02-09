@@ -2,6 +2,8 @@ const styles = theme => ({
     listItem: {
         display: 'flex',
         paddingBottom: 0,
+        padding: '0 24px'
+
     },
     listItemRight: {
         flexDirection: 'row-reverse',
@@ -18,19 +20,8 @@ const styles = theme => ({
         [theme.breakpoints.up('sm')]: {
             paddingLeft: 40 + 24 + 16,
         }
-    },    
-    avatar: {
-        margin: 8,
-    },
-    avatarName: {
-        margin: 8,
-    },    
-    messageMeta: {
-
-    },
+    },      
     messageItemText: {
-        display: 'flex',
-        flexDirection: 'column-reverse',
     },
 })
 

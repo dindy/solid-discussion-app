@@ -11,32 +11,21 @@ class Message extends Component {
     render() {
         
         const { message, classes, alignRight, displayMeta } = this.props
-        const displayAvatar = (display, message, classes) => !display ? (
-            <div className={classes.avatarBlank}></div>
-        ) : (
-            <Avatar alt={message.user.name}
-                src={message.user.avatarUrl}
-                className={classes.avatar}/>
-        )
+
         return (
             <ListItem
                 className={classNames(
                     classes.listItem, 
-                    !displayMeta ? classes.listItemTextWithoutAvatar : null,
+                    classes.listItemTextWithoutAvatar,
                     // alignRight ? classes.listItemRight : null,
                     // alignRight && !displayMeta ? classes.listItemTextRightWithoutAvatar : null, 
                     // !alignRight && !displayMeta ? classes.listItemTextWithoutAvatar: null, 
                     )}>      
 
-                {displayAvatar(displayMeta, message, classes)}
 
-                <ListItemText className={classes.messageItemText}
-                    primary={message.content} 
-                    secondary={!displayMeta ? ' ' : 
-                        <span className={classes.messageMeta}>
-                            {message.user.name + ', ' + message.created.toISOString()}
-                        </span>
-                    } />
+                <ListItemText 
+                    className={classes.messageItemText}
+                    primary={message.content}/>
 
             </ListItem>
         )

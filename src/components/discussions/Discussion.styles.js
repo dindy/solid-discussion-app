@@ -32,7 +32,23 @@ const styles = theme => ({
     },
     scrollDownButton: {
         display: 'none'
-    }    
+    },
+    avatar: {
+        margin: 8,
+    },
+    avatarName: {
+        margin: 8,
+    },  
+    listSubheader: {
+        display: 'flex',
+        paddingBottom: 0,    
+    },
+    messageItemText: {
+        display: 'flex',
+        flexDirection: 'column-reverse',
+        padding: 0,
+        justifyContent: 'center',
+    },            
 })
 
 export default styles
