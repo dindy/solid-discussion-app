@@ -8,7 +8,7 @@ const styles = theme => ({
     drawerHeader: {
         display: 'flex',
         alignItems: 'flex-start',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         padding: `0 ${2 * theme.spacing.unit}px`,
         ...theme.mixins.toolbar,
         [theme.breakpoints.up('sm')]: {
@@ -29,7 +29,7 @@ const styles = theme => ({
         justifyContent: 'center',
     },
     avatar: {
-        margin: `${theme.spacing.unit}px 0`,
+        margin: `${theme.spacing.unit}px auto`,
     },
     bigAvatar: {
         width: theme.spacing.unit * 7,
