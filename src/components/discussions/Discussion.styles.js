@@ -35,6 +35,7 @@ const styles = theme => ({
     },
     avatar: {
         margin: 8,
+        marginLeft: -16,
     },
     avatarName: {
         margin: 8,
@@ -47,7 +48,11 @@ const styles = theme => ({
         display: 'flex',
         flexDirection: 'column-reverse',
         padding: 0,
+        paddingLeft: 8,
         justifyContent: 'center',
+        [theme.breakpoints.up('sm')]: {
+            paddingLeft: 24,
+        }
     },            
 })
 

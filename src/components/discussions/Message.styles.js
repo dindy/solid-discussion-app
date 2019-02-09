@@ -10,13 +10,13 @@ const styles = theme => ({
         textAlign: 'right',
     },
     listItemTextRightWithoutAvatar: {
-        paddingRight: 40 + 16 + 16,
+        paddingRight: 40 + 16,
         [theme.breakpoints.up('sm')]: {
             paddingRight: 40 + 24 + 16,
         }
     },    
     listItemTextWithoutAvatar: {
-        paddingLeft: 40 + 16 + 16,
+        paddingLeft: 40 + 16,
         [theme.breakpoints.up('sm')]: {
             paddingLeft: 40 + 24 + 16,
         }
