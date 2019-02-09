@@ -12,6 +12,7 @@ import ScrollToBottom from 'react-scroll-to-bottom'
 import ListSubheader from '@material-ui/core/ListSubheader'
 import Avatar from '@material-ui/core/Avatar'
 import ListItemText from '@material-ui/core/ListItemText'
+import moment from 'moment'
 
 class Discussion extends Component {
 
@@ -91,7 +92,7 @@ class Discussion extends Component {
                                 src={group.user.avatarUrl}
                                 className={classes.avatar}/>                                    
                             <ListItemText className={classes.messageItemText}
-                                secondary={group.user.name + ', ' + group.created.toISOString()}
+                                secondary={group.user.name + ', ' + moment(group.created.toISOString()).fromNow()}
                                 />                                
                         </ListSubheader>                         
                         {group.messages.map(messages => renderMessageComponent(messages))}
