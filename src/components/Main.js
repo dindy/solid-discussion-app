@@ -23,9 +23,9 @@ class Main extends Component {
     renderLoader() {
         const userStateLoading = this.props.userState.loading
         const discussionsStateLoading = this.props.discussionsState.loading
+        const discussionFormStateSaving = this.props.discussionFormState.saving
         const classes = this.props.classes
-
-        return userStateLoading || discussionsStateLoading ? 
+        return userStateLoading || discussionsStateLoading || discussionFormStateSaving ? 
             <LinearProgress className={classes.progressBar}/> 
             : null
     }

@@ -152,10 +152,6 @@ const snackbarExited = (state, action) => ({ ...state,
     snackbar: handleProcessSnackbarQueue(state.snackbar) 
 })
 
-const newDiscussionSaveError = (state, action) => ({ ...state, 
-    snackbar: handleAddSnackbarMessage(state.snackbar, action.payload) 
-})
-
 const explorerOpen = (state, action) => ({ ...state, 
     explorer: handleOpenClose(state.explorer, true)     
 })
@@ -164,19 +160,7 @@ const explorerClose = (state, action) => ({ ...state,
     explorer: handleOpenClose(state.explorer, false)     
 })
 
-const authenticationError = (state, action) => ({ ...state,
-    snackbar: handleAddSnackbarMessage(state.snackbar, action.payload)         
-})
-
-const requestProfileError = (state, action) => ({ ...state, 
-    snackbar: handleAddSnackbarMessage(state.snackbar, action.payload)         
-})
-
-const discussionFetchError = (state, action) => ({ ...state, 
-    snackbar: handleAddSnackbarMessage(state.snackbar, action.payload)         
-})
-
-const postMessageError = (state, action) => ({ ...state, 
+const addSnackBarMessage = (state, action) => ({ ...state, 
     snackbar: handleAddSnackbarMessage(state.snackbar, action.payload)         
 })
 
@@ -185,29 +169,32 @@ const postMessageError = (state, action) => ({ ...state,
 /******************/
 
 const discussions = utils.createReducer(initialState, {
-    'NEW_DISCUSSION_LAUNCH' : newDiscussionLaunch,
-    'NEW_DISCUSSION_SAVE_SUCCESS' : newDiscussionSaveSuccess,
-    'NEW_DISCUSSION_CANCEL' : newDiscussionCancel,
-    'TOGGLE_LEFT_DRAWER' : toggleLeftDrawer,
-    'CLOSE_LEFT_DRAWER' : closeLeftDrawer,
-    'OPEN_LEFT_DRAWER' : openLeftDrawer,
-    'TOGGLE_DISCUSSION_DRAWER' : toggleDiscussionDrawer,
+    'ADD_PARTICIPANT_CANCEL' : addParticipantCancel,
+    'ADD_PARTICIPANT_LAUNCH' : addParticipantLauch,
+    'ADD_PARTICIPANT_SUCCESS' : addParticipantClose,
+    'AUTHENTICATION_ERROR': addSnackBarMessage,
     'CLOSE_DISCUSSION_DRAWER' : closeDiscussionDrawer,
+    'CLOSE_LEFT_DRAWER' : closeLeftDrawer,
+    'DESELECT_DISCUSSION' : deselectDiscussion,
+    'DISCUSSION_FETCH_ERROR' : addSnackBarMessage,
+    'EXPLORER_CLOSE' : explorerClose,
+    'EXPLORER_OPEN' : explorerOpen,
+    'NEW_DISCUSSION_LAUNCH' : newDiscussionLaunch,
+    'NEW_DISCUSSION_CANCEL' : newDiscussionCancel,
+    'NEW_DISCUSSION_CONTAINER_SAVE_ERROR' : addSnackBarMessage,
+    'NEW_DISCUSSION_INDEX_SAVE_ERROR' : addSnackBarMessage,
+    'NEW_DISCUSSION_VALIDATION_ERROR' : addSnackBarMessage,
+    'NEW_DISCUSSION_ACL_SAVE_ERROR' : addSnackBarMessage,
+    'NEW_DISCUSSION_PRIVATE_TYPE_INDEX_SAVE_ERROR' : addSnackBarMessage,
     'OPEN_DISCUSSION_DRAWER' : openDiscussionDrawer,
+    'OPEN_LEFT_DRAWER' : openLeftDrawer,
+    'POST_MESSAGE_ERROR' : addSnackBarMessage,
+    'REQUEST_USER_PROFILE_ERROR' : addSnackBarMessage,
+    'SELECT_DISCUSSION' : selectDiscussion,
     'SNACKBAR_CLOSE' : snackbarClose,
     'SNACKBAR_EXITED' : snackbarExited,
-    'NEW_DISCUSSION_SAVE_ERROR' : newDiscussionSaveError,
-    'EXPLORER_OPEN' : explorerOpen,
-    'EXPLORER_CLOSE' : explorerClose,
-    'AUTHENTICATION_ERROR': authenticationError,
-    'REQUEST_USER_PROFILE_ERROR' : requestProfileError,
-    'ADD_PARTICIPANT_LAUNCH' : addParticipantLauch,
-    'ADD_PARTICIPANT_CANCEL' : addParticipantCancel,
-    'SELECT_DISCUSSION' : selectDiscussion,
-    'DESELECT_DISCUSSION' : deselectDiscussion,
-    'ADD_PARTICIPANT_SUCCESS' : addParticipantClose,
-    'DISCUSSION_FETCH_ERROR' : discussionFetchError,
-    'POST_MESSAGE_ERROR' : postMessageError
+    'TOGGLE_DISCUSSION_DRAWER' : toggleDiscussionDrawer,
+    'TOGGLE_LEFT_DRAWER' : toggleLeftDrawer,
 });
 
 export default discussions        

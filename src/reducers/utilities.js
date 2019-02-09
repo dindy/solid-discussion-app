@@ -37,3 +37,14 @@ export function mergeDeep(...objects) {
       return prev;
     }, {});
 }
+
+export const handleAsyncSaveEvents = (state, action, key, event) => ({ ...state, 
+    saving: event === 'saving' ? true : Object
+        .keys(state.savings)
+        .filter(lKey => lKey !== key && state.savings[lKey])
+        .length > 0 ? true : false,
+    error: event === 'error' ? action.payload : null,
+    savings: { ...state.savings, 
+        [key]: event === 'saving' ? true : false,
+    }
+})

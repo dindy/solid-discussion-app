@@ -19,7 +19,7 @@ export async function createContainer(parentUri, folderName, data = null) {
     return fetcher.createContainer(parentUri, folderName, data)
 }
 
-export async function initDiscussionAcl(originalFileUri, webId,) {
+export async function initDiscussionAcl(fileUri, aclUri, webId) {
     const body = `
         @prefix acl: <http://www.w3.org/ns/auth/acl#>.
         @prefix foaf: <http://xmlns.com/foaf/0.1/>.
@@ -27,10 +27,10 @@ export async function initDiscussionAcl(originalFileUri, webId,) {
         <#owner>
             a acl:Authorization ;
             acl:agent <${webId}> ;
-            acl:accessTo <${originalFileUri}> ;
+            acl:accessTo <${fileUri}> ;
             acl:mode acl:Read, acl:Write, acl:Control .
         `    
-    return fetcher._fetch(originalFileUri + '.acl', {
+    return fetcher._fetch(aclUri, {
         method: 'PUT',
         headers: {'Content-Type': 'text/turtle'},
         body

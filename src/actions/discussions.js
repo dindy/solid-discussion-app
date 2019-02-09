@@ -1,60 +1,61 @@
 import * as api from '../api/api'
+import * as newDiscussionActions from './newDiscussion'
 
-const computeAbsoluteUrl = (baseUrl, relativeUrl) => {
-    if (relativeUrl.substring(0,1) != '/') // not relative 
-        return relativeUrl
-    else return baseUrl + relativeUrl.substring(1, relativeUrl.length)
-}
+// const computeAbsoluteUrl = (baseUrl, relativeUrl) => {
+//     if (relativeUrl.substring(0,1) != '/') // not relative 
+//         return relativeUrl
+//     else return baseUrl + relativeUrl.substring(1, relativeUrl.length)
+// }
 
-async function handleSaveNewDiscussion(newDiscussion, webId, privateTypeIndexUrl, dispatch, getStore) {
+// async function handleSaveNewDiscussion(newDiscussion, webId, privateTypeIndexUrl, dispatch, getStore) {
 
-    dispatch({ type: 'NEW_DISCUSSION_SAVING', payload: null })
+//     dispatch({ type: 'NEW_DISCUSSION_SAVING', payload: null })
     
-    const parentContainerUri = newDiscussion.path || newDiscussion.storageUrl
+//     const parentContainerUri = newDiscussion.path || newDiscussion.storageUrl
     
-    // Save the container
-    const containerRelativeUrl = await api.createContainer(parentContainerUri, newDiscussion.folderName).then(
-        response => Promise.resolve(response.headers.get('Location')),
-        error => dispatch({ type: 'NEW_DISCUSSION_SAVE_ERROR', payload: error.message })  
-    )
+//     // Save the container
+//     const containerRelativeUrl = await api.createContainer(parentContainerUri, newDiscussion.folderName).then(
+//         response => Promise.resolve(response.headers.get('Location')),
+//         error => dispatch({ type: 'NEW_DISCUSSION_SAVE_ERROR', payload: error.message })  
+//     )
 
-    // If container saved, save the index file
-    if (typeof containerRelativeUrl !== 'undefined') {
-        const containerUrl = computeAbsoluteUrl(newDiscussion.storageUrl, containerRelativeUrl)
-        const indexRelativeUrl = await api.createDiscussionIndex(newDiscussion, webId, containerUrl).then(
-            response => Promise.resolve(response.headers.get('Location')),
-            error => dispatch({ type: 'NEW_DISCUSSION_SAVE_ERROR', payload: error.message })  
-        )
+//     // If container saved, save the index file
+//     if (typeof containerRelativeUrl !== 'undefined') {
+//         const containerUrl = computeAbsoluteUrl(newDiscussion.storageUrl, containerRelativeUrl)
+//         const indexRelativeUrl = await api.createDiscussionIndex(newDiscussion, webId, containerUrl).then(
+//             response => Promise.resolve(response.headers.get('Location')),
+//             error => dispatch({ type: 'NEW_DISCUSSION_SAVE_ERROR', payload: error.message })  
+//         )
 
-        // If index saved, save the .acl and optionally update the type index registry 
-        if (typeof indexRelativeUrl !== 'undefined') {
-            const indexUrl = computeAbsoluteUrl(newDiscussion.storageUrl, indexRelativeUrl)
+//         // If index saved, save the .acl and optionally update the type index registry 
+//         if (typeof indexRelativeUrl !== 'undefined') {
+//             const indexUrl = computeAbsoluteUrl(newDiscussion.storageUrl, indexRelativeUrl)
             
-            const aclRelativeUrl = await api.initDiscussionAcl(indexUrl, webId).then(
-                response => Promise.resolve(response.headers.get('Location')),
-                error => dispatch({ type: 'NEW_DISCUSSION_SAVE_ERROR', payload: error.message })                  
-            )
+//             const aclRelativeUrl = await api.initDiscussionAcl(indexUrl, webId).then(
+//                 response => Promise.resolve(response.headers.get('Location')),
+//                 error => dispatch({ type: 'NEW_DISCUSSION_SAVE_ERROR', payload: error.message })                  
+//             )
             
-            if (typeof aclRelativeUrl !== 'undefined') {
-                dispatch({ type: 'NEW_DISCUSSION_SAVE_SUCCESS', payload: `The discussion has been created at ${indexUrl}` })
-            }
+//             if (typeof aclRelativeUrl !== 'undefined') {
+//                 dispatch({ type: 'NEW_DISCUSSION_SAVE_SUCCESS', payload: `The discussion has been created at ${indexUrl}` })
+//             }
 
-            if (newDiscussion.addToPrivateTypeIndex) {
-                const privateTypeIndexUri = await api.addDiscussionToPrivateRegistry(indexUrl, privateTypeIndexUrl).then(
-                    data => Promise.resolve(data),
-                    error => dispatch({ 
-                        type: 'NEW_DISCUSSION_SAVE_ERROR', 
-                        payload: `We couldn't save the discussion in your Private Type Registry : ${error.message}` 
-                    })  
-                )
-            }
+//             if (newDiscussion.addToPrivateTypeIndex) {
+//                 const privateTypeIndexUri = await api.addDiscussionToPrivateRegistry(indexUrl, privateTypeIndexUrl).then(
+//                     data => Promise.resolve(data),
+//                     error => dispatch({ 
+//                         type: 'NEW_DISCUSSION_SAVE_ERROR', 
+//                         payload: `We couldn't save the discussion in your Private Type Registry : ${error.message}` 
+//                     })  
+//                 )
+//             }
 
-            // Then load the discussion
-            handleOpenDiscussion(indexUrl, dispatch, getStore)
-            handleSelectDiscussion(indexUrl, dispatch)
-        }
-    }
-}
+//             // Then load the discussion
+//             handleOpenDiscussion(indexUrl, dispatch, getStore)
+//             handleSelectDiscussion(indexUrl, dispatch)
+//         }
+//     }
+// }
 
 async function handleSaveAddParticipant(webId, discussionUri, dispatch, getStore) {
 
@@ -188,13 +189,14 @@ export const deselectDiscussion = () => dispatch => {
 }
 
 export const saveNewDiscussion = () => (dispatch, getStore) => {
-    dispatch({ type: 'NEW_DISCUSSION_VALIDATE', payload: null })
-    const store = getStore()
-    const webId = store.user.id
-    const discussionForm = store.discussionForm
-    const privateTypeIndexUrl = store.user.privateTypeIndexUrl
-    if (discussionForm.isValid) 
-        handleSaveNewDiscussion(discussionForm, webId, privateTypeIndexUrl, dispatch, getStore)      
+    newDiscussionActions.handleSaveNewDiscussion(dispatch, getStore, selectDiscussion, openDiscussion)
+    // dispatch({ type: 'NEW_DISCUSSION_VALIDATE', payload: null })
+    // const store = getStore()
+    // const webId = store.user.id
+    // const discussionForm = store.discussionForm
+    // const privateTypeIndexUrl = store.user.privateTypeIndexUrl
+    // if (discussionForm.isValid) 
+    //     handleSaveNewDiscussion(discussionForm, webId, privateTypeIndexUrl, dispatch, getStore)      
 }
 
 export const addParticipant = () => dispatch => {
