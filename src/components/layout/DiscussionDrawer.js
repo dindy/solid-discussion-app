@@ -26,8 +26,8 @@ class DiscussionDrawer extends Component {
             const person = personsState.byId[participant.personId]
             return (typeof person !== 'undefined') ? { 
                 ...participant, 
-                name: person.name, 
-                avatarUrl: person.avatarUrl 
+                name: person.name || 'Unknown', 
+                avatarUrl: person.avatarUrl || 'https://png.pngtree.com/svg/20161027/service_default_avatar_182956.png' 
             } : participant
     })
 

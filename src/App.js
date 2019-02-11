@@ -25,7 +25,6 @@ class App extends Component {
         const discussionURI = this.getParameterFromUrl('discussion')
         if (discussionURI !== null) {
             this.props.openDiscussion(discussionURI)
-            this.props.selectDiscussion(discussionURI)
         }
         
         // Handle responsive
@@ -63,7 +62,7 @@ class App extends Component {
                     userState={this.props.userState} 
                     personsState={this.props.personsState} 
                     discussionsState={this.props.discussionsState} 
-                    selectDiscussion={this.props.selectDiscussion} 
+                    openDiscussion={this.props.openDiscussion} 
                     newDiscussion={this.props.newDiscussion} 
                     />                 
                 <Main 
@@ -125,7 +124,6 @@ const mapDispatchToProps = dispatch => ({
     recoverSession: () => dispatch(userActions.recoverSession()),
     newDiscussion: () => dispatch(discussionsActions.newDiscussion()),
     openDiscussion: url => dispatch(discussionsActions.openDiscussion(url)),
-    selectDiscussion: url => dispatch(discussionsActions.selectDiscussion(url)),
     cancelNewDiscussion: () => dispatch(discussionsActions.cancelNewDiscussion()),
     changeNewDiscussionStorage: storage => dispatch(discussionsActions.changeNewDiscussionStorage(storage)),
     changeNewDiscussionName: name => dispatch(discussionsActions.changeNewDiscussionName(name)),

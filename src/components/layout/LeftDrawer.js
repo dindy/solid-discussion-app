@@ -20,7 +20,7 @@ class LeftDrawer extends Component {
 
     handleDrawerToggle = () => this.props.toggleLeftDrawer()
     
-    handleSelectDiscussion = (uri) => () => this.props.selectDiscussion(uri)
+    handleopenDiscussion = (uri) => () => this.props.openDiscussion(uri)
 
     renderNewDiscussionButton() {
         const authenticated = this.props.userState.authenticated 
@@ -71,7 +71,7 @@ class LeftDrawer extends Component {
                 <ListItem 
                     button 
                     key={id}
-                    onClick={this.handleSelectDiscussion(id)}
+                    onClick={this.handleopenDiscussion(id)}
                     selected={discussionsState.selected == id}
                     >
                     <ChatBubbleOutlineIcon 

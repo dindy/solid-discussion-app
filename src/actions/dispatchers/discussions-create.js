@@ -1,4 +1,4 @@
-import * as api from '../api/api'
+import * as api from '../../api/api'
 
 
 const getAbsoluteUrl = (baseUrl, relativeUrl) => {
@@ -94,7 +94,7 @@ const updatePrivateTypeIndex = (indexUri, privateTypeIndexUrl, dispatch) => {
     )
 }
 
-export async function handleSaveNewDiscussion(dispatch, getStore, selectDiscussion, openDiscussion) {
+export async function save(dispatch, getStore, selectDiscussion) {
     
     var privateTypeIndexUrl = null
     var discussionForm = null
@@ -124,9 +124,8 @@ export async function handleSaveNewDiscussion(dispatch, getStore, selectDiscussi
         const aclUri = newIndexUri + '.acl'
         await saveIndexFileAcl(newIndexUri, aclUri, webId, dispatch) 
     
-        // Create a new discussion entity in the store, load it and select it
+        // Create a new discussion entity in the store and select it
         dispatch({ type: 'DISCUSSION_PARSED', payload: { id: newIndexUri, name: discussionForm.name} })
-        dispatch(openDiscussion(newIndexUri))
         dispatch(selectDiscussion(newIndexUri))
 
     // # If one step fails, the discussion isn't fully created

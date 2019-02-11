@@ -71,7 +71,7 @@ const update = (del, ins) => {
     return new Promise(function (resolve, reject) {
         updater.update(del, ins, (uri, ok, message) => {
             if (ok) return resolve(uri)
-            else reject(new Error(message))
+            else return reject(new Error(message))
         })
     })
 }
@@ -146,35 +146,37 @@ export async function addParticipantAuthorizationsToDiscussion(webId, discussion
     })  
 }
 
-const parseProfile = (webId) => {
-    const $webId = store.sym(webId)
-
-    const $name = store.any($webId, $VCARD('fn')) 
-            || store.any($webId, $FOAF('name'))
-
-    const $avatarUrl = store.any($webId, $VCARD('hasPhoto')) 
-            || store.any($webId, $FOAF('image'))            
-            || store.any($webId, $FOAF('img'))
+export const parseProfile = (webId) => new Promise(function (resolve, reject) {
+    try {
+        const $webId = store.sym(webId)
     
-    const $privateTypeIndexUrl = store.any($webId, $SOLID('privateTypeIndex')) 
+        const $name = store.any($webId, $VCARD('fn')) 
+                || store.any($webId, $FOAF('name'))
     
-    const $storages = store.each($webId, $PIM('storage')) || []
-    
-    return {
-        id: $webId.value,
-        name: $name ? $name.value : null,    
-        avatarUrl: $avatarUrl ? $avatarUrl.value : null,    
-        privateTypeIndexUrl: $privateTypeIndexUrl ? $privateTypeIndexUrl.value : null,    
-        storages: $storages.map($storage => $storage.value),
+        const $avatarUrl = store.any($webId, $VCARD('hasPhoto')) 
+                || store.any($webId, $FOAF('image'))            
+                || store.any($webId, $FOAF('img'))
+        
+        const $privateTypeIndexUrl = store.any($webId, $SOLID('privateTypeIndex')) 
+        
+        const $storages = store.each($webId, $PIM('storage')) || []
+        
+        return resolve({
+            id: $webId.value,
+            name: $name ? $name.value : null,    
+            avatarUrl: $avatarUrl ? $avatarUrl.value : null,    
+            privateTypeIndexUrl: $privateTypeIndexUrl ? $privateTypeIndexUrl.value : null,    
+            storages: $storages.map($storage => $storage.value),
+        })
+    } catch (error) {
+        return reject(error)
     }
-}
+})
 
-export async function loadProfile(webId) {
-    return fetcher.load(webId).then( 
-        response => Promise.resolve(response),
-        error => Promise.reject(error)
-    )
-}
+export const loadProfile = (webId) => fetcher.load(webId).then( 
+    response => Promise.resolve(response),
+    error => Promise.reject(error)
+)
 
 export async function loadAndParseProfile(webId) {
     return loadProfile(webId).then(
@@ -198,18 +200,14 @@ export const parsePublicLinkHeaderAcl = (linkHeaderStr) => {
     const publicRegex = /public="((?:[a-z]|\s)+)"/
     const publicAutorizations = linkHeaderStr.match(publicRegex)
     
-    return publicAutorizations === null ?
-        { ...extractAuthorizationsFromParsedLinkHeader('') }
-        : { ...extractAuthorizationsFromParsedLinkHeader(publicAutorizations[1]) }
+    return { ...extractAuthorizationsFromParsedLinkHeader(publicAutorizations === null ? '' : publicAutorizations[1]) }
 }
 
 export const parseUserLinkHeaderAcl = (linkHeaderStr) => {
     const userRegex = /user="((?:[a-z]|\s)+)"/
     const userAutorizations = linkHeaderStr.match(userRegex)
     
-    return userAutorizations === null ? 
-        { ...extractAuthorizationsFromParsedLinkHeader('') }
-        : { ...extractAuthorizationsFromParsedLinkHeader(userAutorizations[1]) }
+    return { ...extractAuthorizationsFromParsedLinkHeader(userAutorizations === null ? '' : userAutorizations[1]) }
 }
 
 const isAThread = indexFileUri => {
@@ -219,60 +217,65 @@ const isAThread = indexFileUri => {
     return $discussionTypes.filter($type => $type.value === $SIOC('Thread').value).length > 0    
 }
 
-const parseDiscussionInfo = (indexFileUri) => {
-    const $indexFileUri = store.sym(indexFileUri)
-    const $title = store.any($indexFileUri, $PURL('title'), undefined)
-    
-    return {
-        id: indexFileUri,
-        title: $title ? $title.value : null,
+export const parseDiscussionInfo = (indexFileUri) => new Promise((resolve, reject) => {
+    try {
+        const $indexFileUri = store.sym(indexFileUri)
+        if (!isAThread(indexFileUri)) return reject(new Error(`It was not possible to find a sioc:Thread.`))
+
+        const $title = store.any($indexFileUri, $PURL('title'), undefined)
+        return resolve({
+            id: indexFileUri,
+            title: $title ? $title.value : null,
+        })
+    } catch(error) {
+        return reject(error)
     }
-}
+})
 
-const parseDiscussionSuscribers = (indexFileUri) => {
-    const $indexFileUri = store.sym(indexFileUri)
-    const $suscribersAccounts = store.each($indexFileUri, $SIOC('has_subscriber'), undefined)
-    const $participantsWebIds = $suscribersAccounts.map(($suscriberAccount) => {
-        return store.any($suscriberAccount, $SIOC('account_of'), undefined)
-    })
-    
-    return $participantsWebIds.map($webId => ({
-        id: indexFileUri + ':' + $webId.value,
-        personId: $webId.value,
-        discussionId: indexFileUri,
-        read: true,
-        write: true,
-        append: true,
-    }))
-}
+export const parseDiscussionParticipants = (indexFileUri) => new Promise((resolve, reject) => {
+    try {
+        const $indexFileUri = store.sym(indexFileUri)
+        const $suscribersAccounts = store.each($indexFileUri, $SIOC('has_subscriber'), undefined)
+        const $participantsWebIds = $suscribersAccounts.map(($suscriberAccount) => {
+            return store.any($suscriberAccount, $SIOC('account_of'), undefined)
+        })
+        return resolve($participantsWebIds.map($webId => ({
+            id: indexFileUri + ':' + $webId.value,
+            personId: $webId.value,
+            discussionId: indexFileUri,
+            read: true,
+            write: true,
+            append: true,
+        })))
+    } catch(error) {
+        return reject(error)
+    }
+})
 
-const parseDiscussionMessages = (indexFileUri) => {
-    const $indexFileUri = store.sym(indexFileUri)
-    const $messages = store.each($indexFileUri, $SIOC('container_of'), undefined)
-    
-    return $messages.reduce((messages, $message) => {
-        const $messageUri = store.sym($message.value)
-        const $content = store.any($messageUri, $SIOC('content'), undefined)
-        const $account = store.any($messageUri, $SIOC('has_creator'), undefined)
-        const $person = store.any($account, $SIOC('account_of'), undefined)
-        const $created = store.any($messageUri, $PURLE('created'), undefined)
-        return (!!$content && !!$person && !!$created) ?
-            messages.concat({
-                id: $messageUri.value, 
-                creatorId: $person.value,
-                content: $content.value,
-                discussionId: indexFileUri, 
-                created: new Date($created.value)
-            }) : messages
-
-    }, [])
-}
-
-export const parseDiscussion = (indexFileUri) => isAThread(indexFileUri) ? ({
-    info: parseDiscussionInfo(indexFileUri),
-    suscribers: parseDiscussionSuscribers(indexFileUri),
-    messages: parseDiscussionMessages(indexFileUri),
-}) : null
+export const parseDiscussionMessages = (indexFileUri) => new Promise((resolve, reject) => {
+    try {
+        const $indexFileUri = store.sym(indexFileUri)
+        const $messages = store.each($indexFileUri, $SIOC('container_of'), undefined)
+        
+        return resolve($messages.reduce((messages, $message) => {
+            const $messageUri = store.sym($message.value)
+            const $content = store.any($messageUri, $SIOC('content'), undefined)
+            const $account = store.any($messageUri, $SIOC('has_creator'), undefined)
+            const $person = store.any($account, $SIOC('account_of'), undefined)
+            const $created = store.any($messageUri, $PURLE('created'), undefined)
+            return (!!$content && !!$person && !!$created) ?
+                messages.concat({
+                    id: $messageUri.value, 
+                    creatorId: $person.value,
+                    content: $content.value,
+                    discussionId: indexFileUri, 
+                    created: new Date($created.value)
+                }) : messages
+        }, []))
+    } catch(error) {
+        return reject(error)
+    }
+})
 
 export async function loadDiscussion(uri, force = true) {
     return fetcher.load(uri, { force }).then( 
@@ -281,27 +284,32 @@ export async function loadDiscussion(uri, force = true) {
     )
 }
 
-export async function parseDiscussionAclAuthorizations (indexUri) {
+export const parseDiscussionAclAuthorizations = async (indexUri) => new Promise((resolve, reject) => {
+    try {
+        const $indexFile = store.sym(indexUri)
+        const $authorizations = store.each(undefined, $ACL('accessTo'), $indexFile)
+        const $agents = $authorizations.reduce((prevAgents, $authorization) => {
+            return prevAgents.concat(
+                store
+                    .each($authorization, $ACL('agent'))
+                    .map($agent => ({ ...$agent, $authorization }) )
+            )
+        }, [])
 
-    const $indexFile = store.sym(indexUri)
-    const $authorizations = store.each(undefined, $ACL('accessTo'), $indexFile)
-    const $agents = $authorizations.reduce((prevAgents, $authorization) => {
-        return prevAgents.concat(store
-            .each($authorization, $ACL('agent'))
-            .map($agent => ({ ...$agent, $authorization }) )
-        )
-    }, [])
-    
-    return $agents.map($agent => Object.assign({ webId: $agent.value }, 
-        { ...store
-            .each($agent.$authorization, $ACL('mode'))
-            .reduce((props, $mode) => {
-                const mode = $mode.value.split('#')[1].toLowerCase()
-                return ({ ...props, [mode]: true })
-            }, {})
-        }
-    ))
-}
+        return resolve($agents.map($agent => Object.assign(
+            { webId: $agent.value }, 
+            { ...store
+                .each($agent.$authorization, $ACL('mode'))
+                .reduce((props, $mode) => {
+                    const mode = $mode.value.split('#')[1].toLowerCase()
+                    return ({ ...props, [mode]: true })
+                }, {})
+            }
+        )))
+    } catch(error) {
+        return reject(error)
+    }
+})
 
 export async function loadDiscussionAcl(aclUri, force = true) {
     return fetcher.load(aclUri, { force }).then( 
