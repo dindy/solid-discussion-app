@@ -49,7 +49,7 @@ const handleAsyncEvents = (state, stateKey, stateKeys, action, key, event) => ({
     }
 })
 
-export const handleAsyncSaveEvents = (state, action, key, event) => (
+export const handleAsyncSaveEvents = (key, event, state, action) => (
     handleAsyncEvents(state, 'saving', 'savings', action, key, event)) 
 
 export const handleAsyncLoadEvents = (key, event, state, action) => (

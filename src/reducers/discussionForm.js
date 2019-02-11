@@ -51,42 +51,6 @@ const newDiscussionValidate = (state, action) => {
     return { ...state, isValid: true }
 }
 
-const newDiscussionContainerSaving = (state, action) => utils
-    .handleAsyncSaveEvents(state, action, 'container', 'saving') 
-
-const newDiscussionContainerSaveSuccess = (state, action) => utils
-    .handleAsyncSaveEvents(state, action, 'container', 'success')
-
-const newDiscussionContainerSaveError = (state, action) => utils
-    .handleAsyncSaveEvents(state, action, 'container', 'error')
-
-const newDiscussionIndexSaving = (state, action) => utils
-    .handleAsyncSaveEvents(state, action, 'index', 'saving')
-
-const newDiscussionIndexSaveSuccess = (state, action) => utils
-    .handleAsyncSaveEvents(state, action, 'index', 'success')
-
-const newDiscussionIndexSaveError = (state, action) => utils
-    .handleAsyncSaveEvents(state, action, 'index', 'error')
-
-const newDiscussionAclSaving = (state, action) => utils
-    .handleAsyncSaveEvents(state, action, 'acl', 'saving')
-
-const newDiscussionAclSaveSuccess = (state, action) => utils
-    .handleAsyncSaveEvents(state, action, 'acl', 'success')
-
-const newDiscussionAclSaveError = (state, action) => utils
-    .handleAsyncSaveEvents(state, action, 'acl', 'error')
-
-const newDiscussionPrivateTypeIndexSaving = (state, action) => utils
-    .handleAsyncSaveEvents(state, action, 'privateTypeIndex', 'saving')
-
-const newDiscussionPrivateTypeIndexSaveSuccess = (state, action) => utils
-    .handleAsyncSaveEvents(state, action, 'privateTypeIndex', 'success')
-
-const newDiscussionPrivateTypeIndexSaveError = (state, action) => utils
-    .handleAsyncSaveEvents(state, action, 'privateTypeIndex', 'error')
-
 const discussionForm = utils.createReducer(initialState, {
     'NEW_DISCUSSION_LAUNCH' : newDiscussionLaunch,
     'NEW_DISCUSSION_STORAGE_URL_UPDATE' : newDiscussionStorageUrlUpdate,
@@ -95,18 +59,18 @@ const discussionForm = utils.createReducer(initialState, {
     'NEW_DISCUSSION_PATH_UPDATE' : newDiscussionPathUpdate,
     'EXPLORER_SELECT_FOLDER' : newDiscussionPathUpdate,
     'NEW_DISCUSSION_VALIDATION_TRIGGERED' : newDiscussionValidate,
-    'NEW_DISCUSSION_CONTAINER_SAVING' : newDiscussionContainerSaving,
-    'NEW_DISCUSSION_CONTAINER_SAVE_SUCCESS' : newDiscussionContainerSaveSuccess,
-    'NEW_DISCUSSION_CONTAINER_SAVE_ERROR' : newDiscussionContainerSaveError,
-    'NEW_DISCUSSION_INDEX_SAVING' : newDiscussionIndexSaving,
-    'NEW_DISCUSSION_INDEX_SAVE_SUCCESS' : newDiscussionIndexSaveSuccess,
-    'NEW_DISCUSSION_INDEX_SAVE_ERROR' : newDiscussionIndexSaveError,
-    'NEW_DISCUSSION_ACL_SAVING' : newDiscussionAclSaving,
-    'NEW_DISCUSSION_ACL_SAVE_SUCCESS' : newDiscussionAclSaveSuccess,
-    'NEW_DISCUSSION_ACL_SAVE_ERROR' : newDiscussionAclSaveError,
-    'NEW_DISCUSSION_PRIVATE_TYPE_INDEX_SAVING' : newDiscussionPrivateTypeIndexSaving,
-    'NEW_DISCUSSION_PRIVATE_TYPE_INDEX_SAVE_SUCCESS' : newDiscussionPrivateTypeIndexSaveSuccess,
-    'NEW_DISCUSSION_PRIVATE_TYPE_INDEX_SAVE_ERROR' : newDiscussionPrivateTypeIndexSaveError,
+    'NEW_DISCUSSION_CONTAINER_SAVING' : utils.handleAsyncSaveEvents.bind(null, 'container', 'saving'),
+    'NEW_DISCUSSION_CONTAINER_SAVE_SUCCESS' : utils.handleAsyncSaveEvents.bind(null, 'container', 'success'),
+    'NEW_DISCUSSION_CONTAINER_SAVE_ERROR' : utils.handleAsyncSaveEvents.bind(null, 'container', 'error'),
+    'NEW_DISCUSSION_INDEX_SAVING' : utils.handleAsyncSaveEvents.bind(null, 'index', 'saving'),
+    'NEW_DISCUSSION_INDEX_SAVE_SUCCESS' : utils.handleAsyncSaveEvents.bind(null, 'index', 'success'),
+    'NEW_DISCUSSION_INDEX_SAVE_ERROR' : utils.handleAsyncSaveEvents.bind(null, 'index', 'error'),
+    'NEW_DISCUSSION_ACL_SAVING' : utils.handleAsyncSaveEvents.bind(null, 'acl', 'saving'),
+    'NEW_DISCUSSION_ACL_SAVE_SUCCESS' : utils.handleAsyncSaveEvents.bind(null, 'acl', 'success'),
+    'NEW_DISCUSSION_ACL_SAVE_ERROR' : utils.handleAsyncSaveEvents.bind(null, 'acl', 'error'),
+    'NEW_DISCUSSION_PRIVATE_TYPE_INDEX_SAVING' : utils.handleAsyncSaveEvents.bind(null, 'privateTypeIndex', 'saving'),
+    'NEW_DISCUSSION_PRIVATE_TYPE_INDEX_SAVE_SUCCESS' : utils.handleAsyncSaveEvents.bind(null, 'privateTypeIndex', 'success'),
+    'NEW_DISCUSSION_PRIVATE_TYPE_INDEX_SAVE_ERROR' : utils.handleAsyncSaveEvents.bind(null, 'privateTypeIndex', 'error'),
 });
 
 export default discussionForm 
