@@ -27,10 +27,10 @@ const postMessageError = (state, action) => ({ ...state,
 })
 
 const discussionForm = utils.createReducer(initialState, {
-    'POST_MESSAGE_UPDATING' : postMessageUpdating,
-    'POST_MESSAGE_UPDATED' : postMessageUpdated,
-    'POST_MESSAGE_ERROR' : postMessageError,
-    'SET_MESSAGE' : setMessage,
+    'MESSAGE_SAVING' : postMessageUpdating,
+    'MESSAGE_SAVE_SUCCESS' : postMessageUpdated,
+    'MESSAGE_SAVE_ERROR' : postMessageError,
+    'MESSAGE_SET' : setMessage,
 })
 
 export default discussionForm     

@@ -22,14 +22,14 @@ export const login = () => dispatch => {
     popupLogin().then(
         session => {
             dispatch({ type: 'AUTHENTICATION_SUCCESS', payload: session })
-            dispatch({ type: 'REQUEST_USER_PROFILE_LAUNCH', payload: null })     
+            dispatch({ type: 'USER_PROFILE_LOADING', payload: null })     
             // Request the profile
             loadAndParseProfile(session.webId).then(
                 (parsed) => {
-                    dispatch({ type: 'REQUEST_USER_PROFILE_SUCCESS', payload: parsed })
+                    dispatch({ type: 'USER_PROFILE_LOAD_SUCCESS', payload: parsed })
                     dispatch({ type: 'PERSON_PARSED', payload: parsed })
                 }, 
-                (error) => dispatch({ type: 'REQUEST_USER_PROFILE_ERROR', payload: error.message })
+                (error) => dispatch({ type: 'USER_PROFILE_LOAD_ERROR', payload: error.message })
             )
         },
         error => dispatch({ type: 'AUTHENTICATION_ERROR', payload: error })

@@ -3,11 +3,12 @@ import * as api from '../../api/api'
 const validateParticipant = (webId, dispatch, loadAndParsePerson) => {
     
     dispatch({ type: 'PARTICIPANT_PROFILE_LOADING', payload: webId })
-    
+
     return loadAndParsePerson(webId, () => null).then(
-        response => {
-            dispatch({ type: 'PARTICIPANT_PROFILE_LOAD_SUCCESS', payload: null })
-            return Promise.resolve(response)
+        parsed => {
+            dispatch({ type: 'PERSON_PARSED', payload: parsed })
+            dispatch({ type: 'PARTICIPANT_PROFILE_LOAD_SUCCESS', payload: webId })
+            return Promise.resolve(parsed)
         },
         error => {
             const messageError = `Oups... the application couldn't reach this profile. ${error}`
@@ -23,7 +24,7 @@ const addParticipantToDiscussion = (webId, discussionUri, dispatch) => {
     
     return api.addParticipantToDiscussion(webId, discussionUri).then(
         response => {
-            dispatch({ type: 'PARTICIPANT_INDEX_SAVE_SUCCESS', payload: null })
+            dispatch({ type: 'PARTICIPANT_INDEX_SAVE_SUCCESS', payload: webId })
             return Promise.resolve(response)
         },
         error => {

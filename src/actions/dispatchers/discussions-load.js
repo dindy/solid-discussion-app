@@ -2,11 +2,11 @@ import * as api from '../../api/api'
 
 const loadIndex = (indexUri, dispatch) => {
     
-    dispatch({ type: 'DISCUSSION_INDEX_LOADING', payload: null})
+    dispatch({ type: 'DISCUSSION_INDEX_LOADING', payload: indexUri})
 
     return api.loadDiscussion(indexUri).then(
         response => {
-            dispatch({ type: 'DISCUSSION_INDEX_LOAD_SUCCESS', payload: null })
+            dispatch({ type: 'DISCUSSION_INDEX_LOAD_SUCCESS', payload: indexUri })
             return Promise.resolve(response)
         },
         error => {
@@ -41,7 +41,7 @@ const parseDiscussion = async (indexUri, dispatch, loadAndParsePerson) => {
         messages.forEach(message => dispatch({ type: 'MESSAGE_PARSED', payload: message }))
         
         return Promise.resolve(true)
-        
+
     } catch(error) {
         return Promise.reject(new Error(error))
     }
@@ -67,11 +67,11 @@ const parseUserRights = (webId, indexUri, response, dispatch) => {
 
 const loadDiscussionAcl = (aclUri, dispatch) => {
     
-    dispatch({ type: 'DISCUSSION_INDEX_ACL_LOADING', payload: null})
+    dispatch({ type: 'DISCUSSION_INDEX_ACL_LOADING', payload: aclUri})
 
     return api.loadDiscussionAcl(aclUri).then(
         response => {
-            dispatch({ type: 'DISCUSSION_INDEX_ACL_LOAD_SUCCESS', payload: null })
+            dispatch({ type: 'DISCUSSION_INDEX_ACL_LOAD_SUCCESS', payload: aclUri })
             return Promise.resolve(response)
         },
         error => {

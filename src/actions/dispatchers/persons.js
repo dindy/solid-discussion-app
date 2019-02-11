@@ -6,7 +6,7 @@ export const loadPerson = (webId, dispatch) => {
     
     return api.loadProfile(webId).then(
         response => {
-            dispatch({ type: 'PERSON_LOAD_SUCCESS', payload: null })
+            dispatch({ type: 'PERSON_LOAD_SUCCESS', payload: webId })
             return Promise.resolve(response)
         },
         error => {

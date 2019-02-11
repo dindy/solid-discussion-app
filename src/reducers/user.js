@@ -59,9 +59,9 @@ const user = utils.createReducer(initialState, {
     'AUTHENTICATION_LAUNCH': authenticationLaunch,
     'AUTHENTICATION_SUCCESS': authenticationSuccess,
     'AUTHENTICATION_ERROR': authenticationError,
-    'REQUEST_USER_PROFILE_LAUNCH': requestProfileLaunch,
-    'REQUEST_USER_PROFILE_SUCCESS': requestProfileSuccess,
-    'REQUEST_USER_PROFILE_ERROR': requestProfileError,
+    'USER_PROFILE_LOADING': requestProfileLaunch,
+    'USER_PROFILE_LOAD_SUCCESS': requestProfileSuccess,
+    'USER_PROFILE_LOAD_ERROR': requestProfileError,
     'USER_ADD_DISCUSSION_OWNERSHIP': addDiscussionOwnership,
 })  
 

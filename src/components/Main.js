@@ -21,13 +21,19 @@ class Main extends Component {
     }
 
     renderLoader() {
-        const userStateLoading = this.props.userState.loading
-        const discussionsStateLoading = this.props.discussionsState.loading
-        const discussionFormStateSaving = this.props.discussionFormState.saving
+        const userState = this.props.userState
+        const discussionsState = this.props.discussionsState
+        const discussionFormState = this.props.discussionFormState
+        const messageFormState = this.props.messageFormState
+        const participantFormState = this.props.participantFormState
         const classes = this.props.classes
-        return userStateLoading || discussionsStateLoading || discussionFormStateSaving ? 
-            <LinearProgress className={classes.progressBar}/> 
-            : null
+        return userState.loading || userState.saving || 
+            discussionsState.loading || discussionsState.saving ||
+            discussionFormState.loading || discussionFormState.saving ||
+            messageFormState.loading || messageFormState.saving ||
+            participantFormState.loading || participantFormState.saving ? 
+                <LinearProgress className={classes.progressBar}/> 
+                : null
     }
     
     renderNewDiscussionForm() {

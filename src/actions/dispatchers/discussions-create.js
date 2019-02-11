@@ -9,7 +9,7 @@ const getAbsoluteUrl = (baseUrl, relativeUrl) => {
 
 const validateNewDiscussion = (dispatch, getStore) => new Promise( (resolve, reject) => {
     
-    dispatch({ type: 'NEW_DISCUSSION_VALIDATION_TRIGGERED', payload: null })
+    dispatch({ type: 'DISCUSSION_FORM_VALIDATION_TRIGGERED', payload: null })
     
     const store = getStore()
     const webId = store.user.id
@@ -17,27 +17,27 @@ const validateNewDiscussion = (dispatch, getStore) => new Promise( (resolve, rej
     const privateTypeIndexUrl = store.user.privateTypeIndexUrl
     
     if (discussionForm.isValid) {
-        dispatch({ type: 'NEW_DISCUSSION_VALIDATION_SUCCESS', payload: null })
+        dispatch({ type: 'DISCUSSION_FORM_VALIDATION_SUCCESS', payload: null })
         return resolve({ webId, privateTypeIndexUrl, discussionForm })
     } else {
         const messageError = `Oups... something went wrong. Please check the discussion form.`
-        dispatch({ type: 'NEW_DISCUSSION_VALIDATION_ERROR', payload: messageError })
+        dispatch({ type: 'DISCUSSION_FORM_VALIDATION_ERROR', payload: messageError })
         return reject(new Error(messageError))
     }
 })
 
 const saveNewContainer = (parentContainerUri, folderName, dispatch) => {
     
-    dispatch({ type: 'NEW_DISCUSSION_CONTAINER_SAVING', payload: null})
+    dispatch({ type: 'DISCUSSION_FORM_CONTAINER_SAVING', payload: null})
 
     return api.createContainer(parentContainerUri, folderName).then(
         response => {
-            dispatch({ type: 'NEW_DISCUSSION_CONTAINER_SAVE_SUCCESS', payload: null })
+            dispatch({ type: 'DISCUSSION_FORM_CONTAINER_SAVE_SUCCESS', payload: null })
             return Promise.resolve(response)
         },
         error => {
             const messageError = `Oups... the application couldn't create a container on your pod. ${error}`
-            dispatch({ type: 'NEW_DISCUSSION_CONTAINER_SAVE_ERROR', payload: messageError })
+            dispatch({ type: 'DISCUSSION_FORM_CONTAINER_SAVE_ERROR', payload: messageError })
             return Promise.reject(new Error(error))
         }
     )
@@ -45,16 +45,16 @@ const saveNewContainer = (parentContainerUri, folderName, dispatch) => {
 
 const saveNewIndex = (newDiscussion, containerUri, webId, dispatch) => {
 
-    dispatch({ type: 'NEW_DISCUSSION_INDEX_SAVING', payload: null})
+    dispatch({ type: 'DISCUSSION_FORM_INDEX_SAVING', payload: null})
 
     return api.createDiscussionIndex(newDiscussion, webId, containerUri).then(
         response => {
-            dispatch({ type: 'NEW_DISCUSSION_INDEX_SAVE_SUCCESS', payload: null })
+            dispatch({ type: 'DISCUSSION_FORM_INDEX_SAVE_SUCCESS', payload: null })
             return Promise.resolve(response)
         },
         error => {
             const messageError = `Oups... the application couldn't create an index file on your pod. ${error}`
-            dispatch({ type: 'NEW_DISCUSSION_INDEX_SAVE_ERROR', payload: messageError }) 
+            dispatch({ type: 'DISCUSSION_FORM_INDEX_SAVE_ERROR', payload: messageError }) 
             return Promise.reject(new Error(error)) 
         }
     )    
@@ -62,16 +62,16 @@ const saveNewIndex = (newDiscussion, containerUri, webId, dispatch) => {
 
 const saveIndexFileAcl = (aclUri, indexUri, webId, dispatch) => {
 
-    dispatch({ type: 'NEW_DISCUSSION_ACL_SAVING', payload: null})
+    dispatch({ type: 'DISCUSSION_FORM_ACL_SAVING', payload: null})
 
     return api.initDiscussionAcl(aclUri, indexUri, webId).then(
         response => {
-            dispatch({ type: 'NEW_DISCUSSION_ACL_SAVE_SUCCESS', payload: null })
+            dispatch({ type: 'DISCUSSION_FORM_ACL_SAVE_SUCCESS', payload: null })
             return Promise.resolve(response)
         },
         error => {
             const messageError = `Oups... the application couldn't create an authorization file on your pod. ${error}`
-            dispatch({ type: 'NEW_DISCUSSION_ACL_SAVE_ERROR', payload: messageError }) 
+            dispatch({ type: 'DISCUSSION_FORM_ACL_SAVE_ERROR', payload: messageError }) 
             return Promise.reject(new Error(error)) 
         }
     )    
@@ -79,16 +79,16 @@ const saveIndexFileAcl = (aclUri, indexUri, webId, dispatch) => {
 
 const updatePrivateTypeIndex = (indexUri, privateTypeIndexUrl, dispatch) => {
 
-    dispatch({ type: 'NEW_DISCUSSION_PRIVATE_TYPE_INDEX_SAVING', payload: null})
+    dispatch({ type: 'DISCUSSION_FORM_PRIVATE_TYPE_INDEX_SAVING', payload: null})
 
     return api.addDiscussionToPrivateRegistry(indexUri, privateTypeIndexUrl).then(
         response => {
-            dispatch({ type: 'NEW_DISCUSSION_PRIVATE_TYPE_INDEX_SAVE_SUCCESS', payload: null })
+            dispatch({ type: 'DISCUSSION_FORM_PRIVATE_TYPE_INDEX_SAVE_SUCCESS', payload: null })
             return Promise.resolve(response)
         }, 
         error => {
             const messageError = `Oups... the application couldn't add the discussion to your private type index registry. ${error}`
-            dispatch({ type: 'NEW_DISCUSSION_PRIVATE_TYPE_INDEX_SAVE_ERROR', payload: messageError }) 
+            dispatch({ type: 'DISCUSSION_FORM_PRIVATE_TYPE_INDEX_SAVE_ERROR', payload: messageError }) 
             return Promise.reject(new Error(error)) 
         } 
     )

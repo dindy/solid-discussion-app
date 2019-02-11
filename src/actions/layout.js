@@ -1,30 +1,29 @@
-
 export const toggleLeftDrawer = () => dispatch => {
-    dispatch({ type: 'TOGGLE_LEFT_DRAWER', payload: null })    
+    dispatch({ type: 'LEFT_DRAWER_TOGGLED', payload: null })    
 }
 
 export const closeLeftDrawer = () => dispatch => {
-    dispatch({ type: 'CLOSE_LEFT_DRAWER', payload: null })    
+    dispatch({ type: 'LEFT_DRAWER_CLOSED', payload: null })    
 }
 
 export const openLeftDrawer = () => dispatch => {
-    dispatch({ type: 'OPEN_LEFT_DRAWER', payload: null })    
+    dispatch({ type: 'LEFT_DRAWER_OPENED', payload: null })    
 }
 
 export const toggleDiscussionDrawer = () => dispatch => {
-    dispatch({ type: 'TOGGLE_DISCUSSION_DRAWER', payload: null })    
+    dispatch({ type: 'DISCUSSION_DRAWER_TOGGLE', payload: null })    
 }
 
 export const closeDiscussionDrawer = () => dispatch => {
-    dispatch({ type: 'CLOSE_DISCUSSION_DRAWER', payload: null })    
+    dispatch({ type: 'DISCUSSION_DRAWER_CLOSED', payload: null })    
 }
 
 export const openDiscussionDrawer = () => dispatch => {
-    dispatch({ type: 'OPEN_DISCUSSION_DRAWER', payload: null })    
+    dispatch({ type: 'DISCUSSION_DRAWER_OPENED', payload: null })    
 }
 
 export const closeSnackbar = reason => dispatch => {
-    dispatch({ type: 'SNACKBAR_CLOSE', payload: reason })    
+    dispatch({ type: 'SNACKBAR_CLOSED', payload: reason })    
 }
 
 export const exitedSnackbarCallback = () => dispatch => {
@@ -32,5 +31,5 @@ export const exitedSnackbarCallback = () => dispatch => {
 }
 
 export const closeExplorer = () => dispatch => {
-    dispatch({ type: 'EXPLORER_CLOSE', payload: null })    
+    dispatch({ type: 'EXPLORER_CLOSED', payload: null })    
 }

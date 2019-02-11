@@ -135,7 +135,6 @@ class Discussion extends Component {
 
     render() {
         const { classes } = this.props
-
         return (
             <div className={classes.discussion}>
                 { this.renderMessages() }

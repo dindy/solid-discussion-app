@@ -54,5 +54,5 @@ export const selectContainerForNewDiscussion = rootUrl => dispatch => {}
 
 export const selectFolder = url => dispatch => {
     dispatch({ type: 'EXPLORER_SELECT_FOLDER', payload: url })   
-    dispatch({ type: 'EXPLORER_CLOSE', payload: url })   
+    dispatch({ type: 'EXPLORER_CLOSED', payload: url })   
 }
