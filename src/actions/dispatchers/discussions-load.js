@@ -39,7 +39,9 @@ const parseDiscussion = async (indexUri, dispatch, loadAndParsePerson) => {
         
         // ## Dispatch messages
         messages.forEach(message => dispatch({ type: 'MESSAGE_PARSED', payload: message }))
-
+        
+        return Promise.resolve(true)
+        
     } catch(error) {
         return Promise.reject(new Error(error))
     }

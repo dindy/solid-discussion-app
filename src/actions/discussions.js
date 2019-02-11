@@ -2,44 +2,11 @@ import * as api from '../api/api'
 import * as newDiscussionDispatchers from './dispatchers/discussions-create'
 import * as loadDiscussionDispatchers from './dispatchers/discussions-load'
 import * as personsDispatchers from './dispatchers/persons'
-
-async function handleSaveAddParticipant(webId, discussionUri, dispatch, getStore) {
-
-    dispatch({ type: 'ADD_PARTICIPANT_SAVING', payload: null })
-
-    // Check webId
-    const webIdExists = await api.checkProfile(webId).then(
-        response => Promise.resolve(true),
-        error => dispatch({ type: 'ADD_PARTICIPANT_SAVE_ERROR', payload: error.message })            
-    )
-    
-    // Add participant in discusion index
-    if (webIdExists === true) {
-        const participantAdded = await api.addParticipantToDiscussion(webId, discussionUri).then(
-            response => Promise.resolve(true),
-            error => dispatch({ type: 'ADD_PARTICIPANT_SAVE_ERROR', payload: error.message })          
-        )
-        
-        // Add participant in discussion index ACL 
-        if (participantAdded === true) {
-            const authorizations = ['Read', 'Write']
-            const authorizationAdded = await api.addParticipantAuthorizationsToDiscussion(webId, discussionUri, authorizations).then(
-                response => Promise.resolve(true),
-                error => dispatch({ type: 'ADD_PARTICIPANT_SAVE_ERROR', payload: error.message })                  
-            )
-            
-            if (authorizationAdded === true) {
-                dispatch({ type: 'ADD_PARTICIPANT_SUCCESS', payload: null })
-                loadDiscussionDispatchers.load(discussionUri, dispatch, getStore, personsDispatchers.loadAndParsePerson)
-            }
-        }
-    }
-}
+import * as participantsDispatchers from './dispatchers/participants'
 
 export const openDiscussion = indexUrl => (dispatch, getStore) => {
-    loadDiscussionDispatchers.load(indexUrl, dispatch, getStore, personsDispatchers.loadAndParsePerson).then(
-        success => dispatch({ type: 'SELECT_DISCUSSION', payload: indexUrl })   
-    )
+    dispatch({ type: 'SELECT_DISCUSSION', payload: indexUrl })   
+    loadDiscussionDispatchers.load(indexUrl, dispatch, getStore, personsDispatchers.loadAndParsePerson)
 }
 
 export const newDiscussion = () => dispatch => {
@@ -72,7 +39,9 @@ export const addParticipantCancel = () => dispatch => dispatch(
     { type: 'ADD_PARTICIPANT_CANCEL', payload: null })    
 
 export const saveAddParticipant = (webId, discussionUri) => (dispatch, getStore) => {
-    handleSaveAddParticipant(webId, discussionUri, dispatch, getStore)
+    participantsDispatchers.handleSaveAddParticipant(
+        webId, discussionUri, dispatch, getStore, loadDiscussionDispatchers.load, 
+        personsDispatchers.loadAndParsePerson)
 }
 
 export const addParticipantWebIdUpdate = webId => dispatch => dispatch(

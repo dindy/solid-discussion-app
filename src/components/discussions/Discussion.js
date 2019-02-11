@@ -13,6 +13,7 @@ import ListSubheader from '@material-ui/core/ListSubheader'
 import Avatar from '@material-ui/core/Avatar'
 import ListItemText from '@material-ui/core/ListItemText'
 import moment from 'moment'
+import config from '../../config'
 
 class Discussion extends Component {
 
@@ -29,7 +30,7 @@ class Discussion extends Component {
         const completeMessageData = (message, personsById, user) => {
             const hasPerson = typeof personsById[message.creatorId] !== 'undefined'
             let name = 'Unknown'
-            let avatarUrl = null
+            let avatarUrl = config.defaultAvatarUrl
             if (hasPerson) { 
                 name = personsById[message.creatorId].name
                 avatarUrl = personsById[message.creatorId].avatarUrl

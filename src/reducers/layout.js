@@ -111,11 +111,6 @@ const newDiscussionLaunch = (state, action) => ({ ...state,
     newDiscussionForm: handleOpenClose(state.newDiscussionForm, true) 
 })
 
-const newDiscussionSaveSuccess = (state, action) => ({ ...state, 
-    newDiscussionForm: handleOpenClose(state.newDiscussionForm, false),
-    snackbar: handleAddSnackbarMessage(state.snackbar, action.payload) 
-})
-
 const newDiscussionCancel = (state, action) => ({ ...state, 
     newDiscussionForm: handleOpenClose(state.newDiscussionForm, false) 
 })
@@ -171,7 +166,7 @@ const addSnackBarMessage = (state, action) => ({ ...state,
 const discussions = utils.createReducer(initialState, {
     'ADD_PARTICIPANT_CANCEL' : addParticipantCancel,
     'ADD_PARTICIPANT_LAUNCH' : addParticipantLauch,
-    'ADD_PARTICIPANT_SUCCESS' : addParticipantClose,
+    'PARTICIPANT_ADDED' : addParticipantClose,
     'AUTHENTICATION_ERROR': addSnackBarMessage,
     'CLOSE_DISCUSSION_DRAWER' : closeDiscussionDrawer,
     'CLOSE_LEFT_DRAWER' : closeLeftDrawer,
@@ -190,6 +185,9 @@ const discussions = utils.createReducer(initialState, {
     'NEW_DISCUSSION_PRIVATE_TYPE_INDEX_SAVE_ERROR' : addSnackBarMessage,
     'OPEN_DISCUSSION_DRAWER' : openDiscussionDrawer,
     'OPEN_LEFT_DRAWER' : openLeftDrawer,
+    'PARTICIPANT_PROFILE_LOAD_ERROR' : addSnackBarMessage,
+    'PARTICIPANT_INDEX_SAVE_ERROR' : addSnackBarMessage,
+    'PARTICIPANT_ACL_SAVE_ERROR' : addSnackBarMessage,    
     'PERSON_LOAD_ERROR' : addSnackBarMessage,
     'PERSON_PARSE_ERROR' : addSnackBarMessage,
     'POST_MESSAGE_ERROR' : addSnackBarMessage,

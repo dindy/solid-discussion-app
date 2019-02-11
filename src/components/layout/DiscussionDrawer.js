@@ -12,6 +12,7 @@ import ListItem from '@material-ui/core/ListItem'
 import classNames from 'classnames'
 import { withStyles } from '@material-ui/core/styles'
 import styles from './DiscussionDrawer.styles'
+import config from '../../config'
 
 class DiscussionDrawer extends Component {
 
@@ -27,7 +28,7 @@ class DiscussionDrawer extends Component {
             return (typeof person !== 'undefined') ? { 
                 ...participant, 
                 name: person.name || 'Unknown', 
-                avatarUrl: person.avatarUrl || 'https://png.pngtree.com/svg/20161027/service_default_avatar_182956.png' 
+                avatarUrl: person.avatarUrl || config.defaultAvatarUrl 
             } : participant
     })
 
